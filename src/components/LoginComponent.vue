@@ -1,96 +1,99 @@
 <template>
-  <div class="loginContainer">
-    <form action="/action_page.php">
-      <div class="imgcontainer">
-        <img src="@/assets/useravatar.png" alt="Avatar" class="avatar" />
-      </div>
-
-      <div class="container">
-        <label class="label"><b>Username</b></label>
-        <input type="text" placeholder="Enter Username" name="uname" required />
-
-        <label class="label"><b>Password</b></label>
-        <input
-          type="password"
-          placeholder="Enter Password"
-          name="psw"
-          required
-        />
-
-        <button type="submit">Login</button>
-        <input type="checkbox" checked="checked" /> Remember me
-      </div>
-    </form>
-  </div>
+  <v-app class="grey lighten-3">
+    <v-container>
+      <v-card
+        width="400"
+        elevation="6"
+        height="600"
+        class="text-xs-center ml-5 ma-5"
+        color="#FFFFFF"
+      >
+        <v-avatar size="100" class="mt-3">
+          <img src="../assets/avatar-4.png" />
+        </v-avatar>
+        <v-card-titlte>
+          <h3 class="subheading mt-2 grey--text darken-5">
+            Sign in your Account
+          </h3>
+        </v-card-titlte>
+        <v-card-text>
+          <v-form>
+            <v-text-field
+              outline
+              label="Email"
+              size="40"
+              append-icon="email"
+              color="grey darken-3"
+            />
+            <v-text-field
+              outline
+              round
+              color="grey"
+              :type="showpassword ? 'text' : 'password'"
+              label="password"
+              :append-icon="showpassword ? 'visibility' : 'visibility_off'"
+              @click:append="showpassword = !showpassword"
+            />
+            <span class="light-blue--text lighten-1">Forgot Password?</span>
+          </v-form>
+        </v-card-text>
+        <v-card-actions class="text-xs-center">
+          <v-layout>
+            <v-flex>
+              <v-btn dark color="deep-purple darken-1" round class=""
+                >Sign in</v-btn
+              >
+              <v-btn
+                round
+                outline
+                color="deep-purple darken-2"
+                class="mx-auto ml-2"
+                >Sign up</v-btn
+              >
+            </v-flex>
+          </v-layout>
+        </v-card-actions>
+        <v-card-title class="mx-auto">
+          <v-layout>
+            <v-flex>
+              <h5 class="caption grey--text">OR LOGIN WITH</h5>
+            </v-flex>
+          </v-layout>
+        </v-card-title>
+        <v-card-action>
+          <v-layout>
+            <v-flex>
+              <v-btn fab small color="#FFFFFF">
+                <v-icon dark color="primary">fab fa-facebook-f</v-icon>
+              </v-btn>
+              <v-btn fab small color="#FFFFFF">
+                <v-icon dark color="pink">fab fa-google</v-icon>
+              </v-btn>
+              <v-btn fab small color="#FFFFFF">
+                <v-icon dark color="primary">fab fa-twitter</v-icon>
+              </v-btn>
+            </v-flex>
+          </v-layout>
+        </v-card-action>
+      </v-card>
+    </v-container>
+  </v-app>
 </template>
 
 <script>
 export default {
-  name: "HelloWorld",
+  name: "LoginPage",
+  data() {
+    return {
+      showpassword: false,
+    };
+  },
 };
 </script>
 
-<style scoped>
-.loginContainer {
-  width: 400px;
-  margin: 0 auto;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-  transition: 0.3s;
- 
-}
-form {
-  border: 3px solid #f1f1f1;
-}
-
-.label {
-  margin-right: 305px;
-  padding-right: 30px;
-}
-input[type="text"],
-input[type="password"] {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
-
-button {
-  background-color: #4caf50;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-}
-
-button:hover {
-  opacity: 0.8;
-}
-.cancelbtn {
-  width: auto;
-  padding: 10px 18px;
-  background-color: #f44336;
-}
-
-.imgcontainer {
-  text-align: center;
-  margin: 24px 0 12px 0;
-}
-
-img.avatar {
-  width: 40%;
-  border-radius: 50%;
-}
-
-.container {
-  padding: 16px;
-}
-
-span.psw {
-  float: right;
-  padding-top: 16px;
+<style>
+#app {
+  background: url("../assets/cool-background-4.png") no-repeat center center fixed !important;
+  background-size: cover;
 }
 </style>

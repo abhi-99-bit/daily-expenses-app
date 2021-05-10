@@ -5,11 +5,11 @@
 </template>
 
 <script>
-    import SignUpComponent from "@/components/SignUpComponent.vue";
-    export default{
-      name:"SingUp",
-      components:{
-        SignUpComponent,
-      }
-    }
+import SignUpComponent from "@/components/SignUpComponent.vue";
+export default {
+  name: "SingUp",
+  components: {
+    SignUpComponent,
+  },
+};
 </script>
