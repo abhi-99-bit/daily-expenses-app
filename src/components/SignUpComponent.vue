@@ -1,7 +1,7 @@
 <template>
   <div id="signup">
     <v-app>
-      <v-container grid-list-md>
+      <v-container grid-list-md class="mt-5 pt-3">
         <v-layout row wrap class="mx-auto my-auto">
           <v-flex xs12 sm3 md3> </v-flex>
           <v-flex xs12 sm6 md6>

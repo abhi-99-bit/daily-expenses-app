@@ -6,15 +6,15 @@
         <span>Expenses</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-       <p class="grey--text font-weight-bold pr-3 pt-3">Hi, Smith</p>
+      <p class="grey--text font-weight-bold pr-3 pt-3">Hi, Smith</p>
       <v-avatar size="50" outline class="pl-2">
         <img src="../assets/avatar-5.jpg" alt="avatar" />
       </v-avatar>
     </v-toolbar>
-    <h1 class="headline grey--text mt-3 ml-5">My Dashborad</h1>
+    <h1 class="black--text mt-5 ml-5 font-weight-black">MY DASHBOARD ⛱</h1>
     <v-container fulid class="my-4">
       <v-layout row wrap>
-        <v-flex>
+        <v-flex class="mt-4">
           <Tableview />
         </v-flex>
       </v-layout>

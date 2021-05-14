@@ -1,14 +1,14 @@
 <template>
   <div>
     <v-app class="grey lighten-3">
-      <v-container>
+      <v-container class="mt-5 pt-5" justify-center>
         <v-layout row wrap>
           <v-flex md3></v-flex>
           <v-flex md6>
             <v-card
               height="400px"
               elevation="12"
-              class="text-xs-center ml-5 ma-5 mx-auto"
+              class="text-xs-center ml-5 ma-5 mt-5 my-auto"
               color="#FFFFFF"
             >
               <v-card-titlte>
