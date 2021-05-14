@@ -11,6 +11,7 @@
   "main": "index.js",
   "dependencies": {
     "core-js": "^3.6.5",
+    "date-fns": "^2.21.3",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuetify": "^1.5.24"

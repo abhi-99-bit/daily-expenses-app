@@ -1,7 +1,8 @@
 <template>
   <v-app>
-    <v-content> </v-content>
-    <router-view></router-view>
+    <v-content>
+      <router-view></router-view>
+    </v-content>
   </v-app>
 </template>
 
@@ -10,3 +11,11 @@ export default {
   name: "App",
 };
 </script>
+
+<style>
+#app {
+  background: url("./assets/bgimage-5.jpg");
+  background-size: cover;
+}
+
+</style>

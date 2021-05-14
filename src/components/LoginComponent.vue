@@ -1,99 +1,100 @@
 <template>
-  <v-app class="grey lighten-3">
-    <v-container>
-      <v-card
-        width="400"
-        elevation="6"
-        height="600"
-        class="text-xs-center ml-5 ma-5"
-        color="#FFFFFF"
-      >
-        <v-avatar size="100" class="mt-3">
-          <img src="../assets/avatar-4.png" />
-        </v-avatar>
-        <v-card-titlte>
-          <h3 class="subheading mt-2 grey--text darken-5">
-            Sign in your Account
-          </h3>
-        </v-card-titlte>
-        <v-card-text>
-          <v-form>
-            <v-text-field
-              outline
-              label="Email"
-              size="40"
-              append-icon="email"
-              color="grey darken-3"
-            />
-            <v-text-field
-              outline
-              round
-              color="grey"
-              :type="showpassword ? 'text' : 'password'"
-              label="password"
-              :append-icon="showpassword ? 'visibility' : 'visibility_off'"
-              @click:append="showpassword = !showpassword"
-            />
-            <span class="light-blue--text lighten-1">Forgot Password?</span>
-          </v-form>
-        </v-card-text>
-        <v-card-actions class="text-xs-center">
-          <v-layout>
-            <v-flex>
-              <v-btn dark color="deep-purple darken-1" round class=""
-                >Sign in</v-btn
-              >
-              <v-btn
-                round
-                outline
-                color="deep-purple darken-2"
-                class="mx-auto ml-2"
-                >Sign up</v-btn
-              >
-            </v-flex>
-          </v-layout>
-        </v-card-actions>
-        <v-card-title class="mx-auto">
-          <v-layout>
-            <v-flex>
-              <h5 class="caption grey--text">OR LOGIN WITH</h5>
-            </v-flex>
-          </v-layout>
-        </v-card-title>
-        <v-card-action>
-          <v-layout>
-            <v-flex>
-              <v-btn fab small color="#FFFFFF">
-                <v-icon dark color="primary">fab fa-facebook-f</v-icon>
-              </v-btn>
-              <v-btn fab small color="#FFFFFF">
-                <v-icon dark color="pink">fab fa-google</v-icon>
-              </v-btn>
-              <v-btn fab small color="#FFFFFF">
-                <v-icon dark color="primary">fab fa-twitter</v-icon>
-              </v-btn>
-            </v-flex>
-          </v-layout>
-        </v-card-action>
-      </v-card>
-    </v-container>
-  </v-app>
+  <div>
+    <v-app class="grey lighten-3">
+      <v-container>
+        <v-layout row wrap>
+          <v-flex md3></v-flex>
+          <v-flex md6>
+            <v-card
+              height="400px"
+              elevation="12"
+              class="text-xs-center ml-5 ma-5 mx-auto"
+              color="#FFFFFF"
+            >
+              <v-card-titlte>
+                <h3
+                  class="display-1 pt-4 black--text darken-5 font-weight-bold"
+                >
+                  Login Here
+                </h3>
+              </v-card-titlte>
+              <v-card-text>
+                <v-form ref="form" v-model="valid" lazy-validation>
+                  <v-text-field
+                    v-model="email"
+                    outline
+                    label="Email"
+                    :rules="emailRules"
+                    size="40"
+                    append-icon="email"
+                    color="grey darken-3"
+                    requried
+                  />
+                  <v-text-field
+                    outline
+                    color="grey"
+                    v-model="password"
+                    :rules="passwordRules"
+                    :type="showpassword ? 'text' : 'password'"
+                    label="password"
+                    :append-icon="
+                      showpassword ? 'visibility' : 'visibility_off'
+                    "
+                    @click:append="showpassword = !showpassword"
+                    required
+                  />
+                  <span class="subheading light-blue--text lighten-1"
+                    ><a>forgot password?</a></span
+                  >
+                </v-form>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                  dark
+                  block
+                  color="deep-purple darken-1"
+                  depressed
+                  class="mx-2"
+                  text-nones
+                  >login</v-btn
+                >
+              </v-card-actions>
+              <v-card-title class="justify-center">
+                <span class="heading"> dont have account</span
+                ><span class="pl-1"><a href="/register">clickhere</a></span>
+              </v-card-title>
+            </v-card>
+          </v-flex>
+          <v-flex md4></v-flex>
+        </v-layout>
+      </v-container>
+    </v-app>
+  </div>
 </template>
 
 <script>
 export default {
   name: "LoginPage",
-  data() {
-    return {
-      showpassword: false,
-    };
-  },
+  data: () => ({
+    showpassword: false,
+    valid: true,
+    email: "",
+    emailRules: [
+      (v) => !!v || "E-mail is required",
+      (v) => /.+@.+/.test(v) || "E-mail must be valid",
+    ],
+    password:"",
+    passwordRules:[
+      (v) => !!v || "password is required",
+      (v) => /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/.test(v) || "password must be valid"
+    ]
+  }),
 };
 </script>
 
 <style>
-#app {
-  background: url("../assets/cool-background-4.png") no-repeat center center fixed !important;
-  background-size: cover;
+
+a {
+  text-decoration: none;
 }
 </style>
