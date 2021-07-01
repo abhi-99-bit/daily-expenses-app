@@ -19,15 +19,15 @@
                 </div>
               </v-card-title>
               <v-divider></v-divider>
-              <v-card-text>
-                <v-form ref="form" v-model="valid" lazy-validation>
+              <v-form ref="form" v-model="valid" lazy-validation>
+                <v-card-text>
                   <v-layout row warp class="mx-auto my-auto">
                     <v-flex xs12 sm6 md6>
                       <v-text-field
                         outline
                         :counter="10"
                         :rules="nameRules"
-                        v-model="name"
+                        v-model="firstname"
                         label="First name"
                         append-icon="edit"
                       ></v-text-field>
@@ -76,31 +76,31 @@
                       ></v-text-field>
                     </v-flex>
                   </v-layout>
-                </v-form>
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions>
-                <v-layout>
-                  <v-flex xs12 sm6 md6>
-                    <v-checkbox
-                      label="accept terms & conditions"
-                      :rules="[(v) => !!v || 'You must agree to continue!']"
-                      v-model="checkbox"
-                      required
-                    ></v-checkbox>
-                  </v-flex>
-                  <v-flex xs12 md6 class="mt-2">
-                    <v-btn
-                      depressed
-                      dark
-                      block
-                      color="deep-purple darken-1"
-                      size="80"
-                      >Sign Up</v-btn
-                    >
-                  </v-flex>
-                </v-layout>
-              </v-card-actions>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-layout>
+                    <v-flex xs12 sm6 md6>
+                      <v-checkbox
+                        label="accept terms & conditions"
+                        :rules="[(v) => !!v || 'You must agree to continue!']"
+                        v-model="checkbox"
+                        required
+                      ></v-checkbox>
+                    </v-flex>
+                    <v-flex xs12 md6 class="mt-2">
+                      <v-btn
+                        block
+                        color="deep-purple darken-1"
+                        size="80"
+                        :disabled="!valid"
+                        @click="validate"
+                        >Sign Up</v-btn
+                      >
+                    </v-flex>
+                  </v-layout>
+                </v-card-actions>
+              </v-form>
             </v-card>
           </v-flex>
           <v-flex xs12 sm3 md3> </v-flex>
@@ -111,10 +111,11 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data: () => ({
     valid: true,
-    name: "",
+    firstname: "",
     nameRules: [
       (v) => !!v || "Name is required",
       (v) => (v && v.length <= 10) || "Name must be less then 10 characters",
@@ -147,6 +148,35 @@ export default {
     ],
     checkbox: false,
   }),
+  methods: {
+    validate() {
+      if (this.$refs.form.validate() == false) {
+        this.snackbar = true;
+      } else {
+        let user_data = {
+          first_name: this.firstname,
+          last_name: this.lastname,
+          email: this.email,
+          password: this.password,
+          accept_tc: this.checkbox == true ? 1 : 0,
+        };
+        console.log(user_data);
+        axios({
+          method: "POST",
+          url: "http://localhost:3000/users",
+          data: user_data,
+        })
+          .then((response) => {
+            if (response.status === 200) {
+              this.$router.push("/login");
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      }
+    },
+  },
 };
 </script>
 

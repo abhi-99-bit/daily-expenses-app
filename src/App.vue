@@ -14,8 +14,7 @@ export default {
 
 <style>
 #app {
-  background: url("./assets/bgimage-5.jpg");
+  background: url("./assets/back-6.jpg");
   background-size: cover;
 }
-
 </style>

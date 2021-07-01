@@ -6,56 +6,369 @@
         <span>Expenses</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <p class="grey--text font-weight-bold pr-3 pt-3">Hi, Smith</p>
       <v-avatar size="50" outline class="pl-2">
         <img src="../assets/avatar-5.jpg" alt="avatar" />
       </v-avatar>
+
+      <div class="text-xs-center">
+        <v-menu offset-y transition="scale-transition">
+          <template v-slot:activator="{ on }">
+            <div>
+              <span
+                class="title grey--text font-weight-bold pt-3 ml-4"
+                v-on="on"
+              >
+                Abhishek<v-icon>arrow_drop_down</v-icon></span
+              >
+            </div>
+          </template>
+
+          <v-list>
+            <v-list-tile v-for="(dashItem, i) in dashItems" :key="i">
+              <v-list-tile-title
+                ><v-icon>{{ dashItem.icon }}</v-icon>
+                {{ dashItem.title }}
+              </v-list-tile-title>
+            </v-list-tile>
+          </v-list>
+        </v-menu>
+      </div>
+      <v-btn
+        dark
+        color="grey darken-1"
+        class="subheading text-none"
+        depressed
+        flat
+        @click="logout()"
+      >
+        <span>Logout</span>
+        <v-icon right>logout</v-icon>
+      </v-btn>
     </v-toolbar>
-    <h1 class="black--text mt-5 ml-5 font-weight-black">MY DASHBOARD ⛱</h1>
+    <h1 class="grey--text mt-5 ml-5 font-weight-black">MY DASHBOARD</h1>
+    <CardView />
     <v-container fulid class="my-4">
       <v-layout row wrap>
         <v-flex class="mt-4">
-          <Tableview />
+          <!--  TABLE VIEW -->
+          <div>
+            <v-toolbar flat color="white">
+              <v-toolbar-title class="grey--text"
+                >MY LIST OF EXPENSES</v-toolbar-title
+              >
+              <v-divider class="mx-2" inset vertical></v-divider>
+              <v-spacer></v-spacer>
+
+              <v-dialog v-model="dialog" max-width="500px">
+                <template v-slot:activator="{ on }">
+                  <v-btn flat class="mb-2" v-on="on" color="grey" dark>
+                    Add List
+                    <v-icon color="grey" size="33" right
+                      >playlist_add</v-icon
+                    ></v-btn
+                  >
+                </template>
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">{{ formTitle }}</span>
+                  </v-card-title>
+                  <v-form ref="dialogForm" v-model="isValid" lazy-validation>
+                    <v-card-text>
+                      <v-container grid-list-md>
+                        <v-layout wrap>
+                          <v-flex xs12 sm6 md12>
+                            <v-select
+                              prepend-icon="category"
+                              color="deep-purple darken-1"
+                              :items="[
+                                'Gamming',
+                                'Travelling',
+                                'Entertainment',
+                                'Food',
+                                'Shopping',
+                              ]"
+                              :rules="[(v) => !!v || 'Item is required']"
+                              label="Select Category*"
+                              v-model="editedItem.category"
+                              v-bind="category"
+                              required
+                            ></v-select>
+                          </v-flex>
+                          <v-flex xs12 sm6 md6>
+                            <v-text-field
+                              color="deep-purple darken-1"
+                              label="Cost"
+                              :rules="[(v) => !!v || 'Cost is required']"
+                              type="number"
+                              v-model="editedItem.price"
+                              prepend-icon="attach_money"
+                              v-bind="price"
+                              required
+                            ></v-text-field>
+                          </v-flex>
+                          <v-flex xs12 sm6 md6>
+                            <v-menu>
+                              <v-text-field
+                                color="deep-purple darken-1"
+                                slot="activator"
+                                label="Date"
+                                :value="date"
+                                :rules="[(v) => !!v || 'Date is required']"
+                                prepend-icon="event"
+                                v-bind="date"
+                                v-model="editedItem.date"
+                                required
+                              ></v-text-field>
+                              <v-date-picker
+                                color="deep-purple darken-1"
+                                header-color="deep-purple darken-1"
+                                v-model="editedItem.date"
+                                required
+                              ></v-date-picker>
+                            </v-menu>
+                          </v-flex>
+                          <v-flex xs12 sm6 md12>
+                            <v-textarea
+                              color="deep-purple darken-1"
+                              label="discription"
+                              prepend-icon="description"
+                              v-model="editedItem.discription"
+                              v-bind="discription"
+                              :counter="50"
+                              :rules="[
+                                (v) => !!v || 'discription is required',
+                                (v) =>
+                                  (v && v.length <= 50) ||
+                                  'discription must be less then 50 characters',
+                              ]"
+                            ></v-textarea>
+                          </v-flex>
+                        </v-layout>
+                      </v-container>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="deep-purple darken-1" flat @click="close"
+                        >Cancel</v-btn
+                      >
+                      <v-btn color="deep-purple darken-1" flat @click="save"
+                        >Save</v-btn
+                      >
+                    </v-card-actions>
+                  </v-form>
+                </v-card>
+              </v-dialog>
+            </v-toolbar>
+            <v-data-table
+              :headers="headers"
+              :items="userExpenses"
+              class="elevation-1"
+              hide-actions
+              :pagination.sync="pagination"
+            >
+              <template v-slot:items="props">
+                <td>{{ props.item.category }}</td>
+                <td class="justify-center">{{ props.item.price }}</td>
+                <td class="justify-center">{{ props.item.date }}</td>
+                <td class="justify-center">{{ props.item.discription }}</td>
+                <td class="justify-center layout px-0">
+                  <v-icon
+                    small
+                    class="mr-2 black--text"
+                    @click.prevent="editItem(props.item)"
+                  >
+                    edit
+                  </v-icon>
+
+                  <v-divider class="mx-2" inset vertical></v-divider>
+                  <v-icon
+                    small
+                    class="red--text"
+                    @click.prevent="deleteItem(props.item)"
+                  >
+                    delete
+                  </v-icon>
+                </td>
+              </template>
+            </v-data-table>
+            <div class="text-xs-center pt-2">
+              <v-pagination
+                v-model="pagination.page"
+                :length="pages"
+              ></v-pagination>
+            </div>
+          </div>
+          <!-- /// -->
         </v-flex>
       </v-layout>
     </v-container>
+    <ConfirmBox
+      :show="showDialog"
+      :discription="value"
+      :cancel="cancel"
+      :confirm="confirm"
+    />
   </v-app>
 </template>
 
 <script>
-import Tableview from "./Tableview";
+import { mapGetters } from "vuex";
+import ConfirmBox from "./confirmBox.vue";
+import CardView from "./cardView.vue";
+
 export default {
-  components: { Tableview },
+  components: {
+    ConfirmBox,
+    CardView,
+  },
   data() {
     return {
-      expenses: [
-        {
-          category: "Gamming",
-          cost: "200$",
-          date: "5th May 2022",
-          description: "Buy Pubg pc game.",
-        },
-        {
-          category: "shopping",
-          cost: "200$",
-          date: "1st May 2021",
-          description: "Buy new shoes from store.",
-        },
-
-        {
-          category: "shopping",
-          cost: "600$",
-          date: "1st April 2021",
-          description: "Buy new Iphone 12",
-        },
-        {
-          category: "Travailing",
-          cost: "20,000$",
-          date: "1st jan 2020",
-          description: "Going on vication with family",
-        },
+      items: [{ title: "Today" }, { title: "Week" }, { title: "Month" }],
+      dashItems: [
+        { title: "Profile", icon: "person" },
+        { title: "Dashboard", icon: "space_dashboard" },
       ],
+      isValid: true,
+      userName: "",
+      vaild: "true",
+      search: "",
+      pagination: { ascending: true, sortBy: "name", rowsPerPage: 5, page: 1 },
+      dialog: false,
+      // expensesList: [],
+      headers: [
+        {
+          text: "Category",
+          align: "left",
+          sortable: false,
+          value: "category",
+        },
+        { text: "Cost", value: "price" },
+        { text: "Date", value: "date" },
+        { text: "Discription", value: "discription" },
+        { text: "Actions", value: "category", sortable: false },
+      ],
+
+      category: "",
+      price: "",
+      date: "",
+      discription: "",
+      value: "",
+      showDialog: false,
+      editedIndex: -1,
+      deleteIndex: -1,
+      editedItem: {
+        category: "",
+        price: null,
+        date: new Date().toISOString().substr(0, 10),
+        discription: "",
+      },
+      defaultItem: {
+        category: "",
+        cost: null,
+        date: new Date().toISOString().substr(0, 10),
+        discription: "",
+      },
     };
+  },
+  computed: {
+    ...mapGetters(["userExpenses"]),
+    pages() {
+      if (
+        this.pagination.rowsPerPage == null ||
+        this.pagination.totalItems == null
+      )
+        return 0;
+
+      return Math.ceil(
+        this.pagination.totalItems / this.pagination.rowsPerPage
+      );
+    },
+    formTitle() {
+      return this.editedIndex === -1 ? "New Item" : "Edit Item";
+    },
+  },
+
+  watch: {
+    dialog(val) {
+      val || this.close();
+    },
+  },
+  // Life Cycle_Hook
+  mounted() {
+    this.userExpensesInitialization();
+  },
+  methods: {
+    userExpensesInitialization() {
+      this.$store.dispatch("getUserExpenses");
+    },
+    clickMe() {
+      console.log("hello");
+    },
+    logout() {
+      localStorage.clear();
+      this.$store.dispatch("logout");
+      this.$router.push("/login");
+    },
+    editItem(item) {
+      // this.editedIndex = this.userExpenses.indexOf(item);
+      this.editedIndex = item.post_id;
+      console.log(this.editedIndex);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
+    },
+
+    deleteItem(item) {
+      this.showDialog = true;
+      this.deleteIndex = item.post_id;
+      this.value = item.category;
+      console.log(this.deleteIndex);
+    },
+
+    close() {
+      this.dialog = false;
+      // setTimeout(() => {
+      //   this.editedItem = Object.assign({}, this.defaultItem);
+      //   this.editedIndex = -1;
+      // }, 300);
+    },
+    cancel() {
+      this.$refs.dialogForm.resetValidation();
+      this.$refs.dialogForm.reset();
+      this.showDialog = false;
+    },
+    confirm() {
+      console.log("confirm");
+      let payload = { id: this.deleteIndex };
+      this.$store.dispatch("deleteExpenses", payload);
+      this.deleteIndex = -1;
+      this.showDialog = false;
+    },
+    save() {
+      if (this.editedIndex > -1) {
+        console.log("this is edit item", this.editedIndex, this.editedItem);
+        let payload = {
+          id: this.editedIndex,
+          data: this.editedItem,
+        };
+        console.log(payload);
+        this.$store.dispatch("editExpenses", payload);
+        this.$refs.dialogForm.reset();
+      } else {
+        if (this.$refs.dialogForm.validate() === true) {
+          let newList = {
+            category: this.editedItem.category,
+            price: this.editedItem.price,
+            date: this.editedItem.date,
+            discription: this.editedItem.discription,
+          };
+          console.log(newList);
+          this.$store.dispatch("addExpenses", newList);
+        }
+      }
+      this.$refs.dialogForm.reset();
+      this.$refs.dialogForm.resetValidation();
+      this.close();
+    },
   },
 };
 </script>

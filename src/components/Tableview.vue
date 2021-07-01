@@ -70,7 +70,12 @@
                     v-model="editedItem.description"
                     v-bind="description"
                     :counter="50"
-                    :rules="desciptionBoxRules"
+                    :rules="[
+                      (v) => !!v || 'Description is required',
+                      (v) =>
+                        (v && v.length <= 50) ||
+                        'Description must be less then 50 characters',
+                    ]"
                   ></v-textarea>
                 </v-flex>
               </v-layout>
@@ -87,16 +92,16 @@
     </v-toolbar>
     <v-data-table
       :headers="headers"
-      :items="expenses"
+      :items="expensesList"
       class="elevation-1"
       hide-actions
       :pagination.sync="pagination"
     >
       <template v-slot:items="props">
         <td>{{ props.item.category }}</td>
-        <td class="justify-center">{{ props.item.cost }}</td>
+        <td class="justify-center">{{ props.item.price }}</td>
         <td class="justify-center">{{ props.item.date }}</td>
-        <td class="justify-center">{{ props.item.description }}</td>
+        <td class="justify-center">{{ props.item.discription }}</td>
         <td class="justify-center layout px-0">
           <v-icon small class="mr-2 black--text" @click="editItem(props.item)">
             edit
@@ -105,9 +110,6 @@
             delete
           </v-icon>
         </td>
-      </template>
-      <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize">Reset</v-btn>
       </template>
     </v-data-table>
     <div class="text-xs-center pt-2">
@@ -118,45 +120,54 @@
 
 <script>
 export default {
-  data: () => ({
-    vaild: "true",
-    desciptionBoxRules: [
-      (v) => !!v || "Description is required",
-      (v) =>
-        (v && v.length <= 50) || "Description must be less then 50 characters",
-    ],
-    search: "",
-    pagination: {},
-    dialog: false,
-    headers: [
-      {
-        text: "Category",
-        align: "left",
-        sortable: false,
-        value: "category",
+  data() {
+    return {
+      vaild: "true",
+      search: "",
+      pagination: {},
+      dialog: false,
+      expensesList: [],
+      headers: [
+        {
+          text: "Category",
+          align: "left",
+          sortable: false,
+          value: "category",
+        },
+        { text: "Cost", value: "price" },
+        { text: "Date", value: "date" },
+        { text: "Discription", value: "discription" },
+        { text: "Actions", value: "category", sortable: false },
+      ],
+      cost: "",
+      date: "",
+      description: "",
+
+      editedIndex: -1,
+      editedItem: {
+        category: "",
+        cost: null,
+        date: null,
+        description: "",
       },
-      { text: "Cost", value: "cost" },
-      { text: "Date", value: "date" },
-      { text: "Description", value: "description" },
-      { text: "Actions", value: "category", sortable: false },
-    ],
-    expenses: [],
-    editedIndex: -1,
-    editedItem: {
-      category: "",
-      cost: null,
-      date: null,
-      description: "",
-    },
-    defaultItem: {
-      category: "",
-      cost: null,
-      date: null,
-      description: "",
-    },
-  }),
+      defaultItem: {
+        category: "",
+        cost: null,
+        date: null,
+        description: "",
+      },
+    };
+  },
 
   computed: {
+    getterExpnes() {
+      console.log(this.expensesList);
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      return (this.expensesList =
+        this.$store.getters.allExpens.length > 0
+          ? this.$store.getters.allExpens
+          : []);
+    },
     pages() {
       if (
         this.pagination.rowsPerPage == null ||
@@ -180,63 +191,10 @@ export default {
   },
 
   created() {
-    this.initialize();
+    this.$store.dispatch("getUserExpenses");
   },
 
   methods: {
-    initialize() {
-      this.expenses = [
-        {
-          category: "Shopping",
-          cost: 2000,
-          date: "2021-04-01",
-          description: "Buy new clothes",
-        },
-        {
-          category: "Travelling",
-          cost: 50000,
-          date: "2020-07-01",
-          description: "Trip to Goa...🚗",
-        },
-        {
-          category: "Shopping",
-          cost: 2500,
-          date: "2021-05-01",
-          description: "Buy new clothes...🛒",
-        },
-        {
-          category: "Gamming",
-          cost: 3000,
-          date: "2021-04-01",
-          description: "Spend money on pc bulid",
-        },
-        {
-          category: "food",
-          cost: 300,
-          date: "2021-05-01",
-          description: "order pizza...🍕",
-        },
-        {
-          category: "COD",
-          cost: 159,
-          date: "2021-05-01",
-          description: "Buy new clothes",
-        },
-        {
-          category: "Shopping",
-          cost: 2500,
-          date: "2021-05-01",
-          description: "Buy new clothes...🛒",
-        },
-        {
-          category: "Shopping",
-          cost: 2500,
-          date: "2021-05-01",
-          description: "Buy new clothes...🛒",
-        },
-      ];
-    },
-
     editItem(item) {
       this.editedIndex = this.expenses.indexOf(item);
       this.editedItem = Object.assign({}, item);
