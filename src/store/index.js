@@ -75,8 +75,12 @@ export default new Vuex.Store({
           this.dispatch("getWeeklyExpenses");
           this.dispatch("getMonthlyExpenses");
           this.dispatch("getUser");
+          return response.data;
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          console.log(error);
+          return error;
+        });
     },
     editExpenses({ commit }, payload) {
       apiCall
@@ -101,16 +105,20 @@ export default new Vuex.Store({
         })
         .catch((error) => console.error(error));
     },
-    addExpenses({ commit }, payload) {
-      apiCall
+    async addExpenses({ commit }, payload) {
+      await apiCall
         .addExpenses(payload)
-        .then(() => {
+        .then((response) => {
           commit("ADD_EXPENSES", payload);
           this.dispatch("getTodayExpenses");
           this.dispatch("getWeeklyExpenses");
           this.dispatch("getMonthlyExpenses");
+          return response;
         })
-        .catch((error) => console.error(error));
+        .catch((error) => {
+          console.log(error);
+          Promise.reject(error);
+        });
     },
     getTodayExpenses({ commit }) {
       apiCall

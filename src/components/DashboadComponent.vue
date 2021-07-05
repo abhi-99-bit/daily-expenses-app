@@ -151,7 +151,16 @@
                       <v-btn color="deep-purple darken-1" flat @click="close"
                         >Cancel</v-btn
                       >
-                      <v-btn color="deep-purple darken-1" flat @click="save"
+                      <v-progress-circular
+                        v-if="progress"
+                        indeterminate
+                        color="purple"
+                      ></v-progress-circular>
+                      <v-btn
+                        v-else
+                        color="deep-purple darken-1"
+                        flat
+                        @click="save"
                         >Save</v-btn
                       >
                     </v-card-actions>
@@ -163,8 +172,6 @@
               :headers="headers"
               :items="userExpenses"
               class="elevation-1"
-              hide-actions
-              :pagination.sync="pagination"
             >
               <template v-slot:items="props">
                 <td>{{ props.item.category }}</td>
@@ -191,12 +198,6 @@
                 </td>
               </template>
             </v-data-table>
-            <div class="text-xs-center pt-2">
-              <v-pagination
-                v-model="pagination.page"
-                :length="pages"
-              ></v-pagination>
-            </div>
           </div>
           <!-- /// -->
         </v-flex>
@@ -232,7 +233,6 @@ export default {
       userName: "",
       vaild: "true",
       search: "",
-      pagination: { ascending: true, sortBy: "name", rowsPerPage: 5, page: 1 },
       dialog: false,
       // expensesList: [],
       headers: [
@@ -247,7 +247,7 @@ export default {
         { text: "Discription", value: "discription" },
         { text: "Actions", value: "category", sortable: false },
       ],
-
+      progress: false,
       category: "",
       price: "",
       date: "",
@@ -351,24 +351,55 @@ export default {
           data: this.editedItem,
         };
         console.log(payload);
-        this.$store.dispatch("editExpenses", payload);
-        this.$refs.dialogForm.reset();
+        this.progress = true;
+        let promise = new Promise((resolve) => {
+          this.$store.dispatch("editExpenses", payload);
+          setTimeout(() => {
+            resolve("excute sucessfully");
+          }, 2000);
+        });
+
+        promise.then((res) => {
+          this.progress = false;
+          console.log("promise" + " " + res);
+          this.$refs.dialogForm.reset();
+          this.close();
+        });
       } else {
-        if (this.$refs.dialogForm.validate() === true) {
+        if (this.$refs.dialogForm.validate() == true) {
           let newList = {
             category: this.editedItem.category,
             price: this.editedItem.price,
             date: this.editedItem.date,
             discription: this.editedItem.discription,
           };
+          this.progress = true;
           console.log(newList);
-          this.$store.dispatch("addExpenses", newList);
+          let promise = this.$store.dispatch("addExpenses", newList);
+          promise
+            .then(() => {
+              this.progress = false;
+              this.$refs.dialogForm.resetValidation();
+              this.$refs.dialogForm.reset();
+              this.close();
+            })
+            .catch((error) => {
+              if (error) this.progress = true;
+              setTimeout(() => {
+                this.close();
+              }, 5000);
+            });
         }
       }
-      this.$refs.dialogForm.reset();
-      this.$refs.dialogForm.resetValidation();
-      this.close();
+
+      // this.$refs.dialogForm.resetValidation();
+      // this.close();
     },
   },
 };
 </script>
+<style lang="stylus" scoped>
+.v-progress-circular {
+  margin: 1rem;
+}
+</style>
