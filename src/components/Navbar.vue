@@ -1,0 +1,69 @@
+<template>
+  <v-toolbar flat app>
+    <v-toolbar-title class="text-uppercase grey--text">
+      <span class="font-weight-light">Daily</span>
+      <span>Expenses</span>
+    </v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-avatar size="50" outline class="pl-2">
+      <img src="../assets/avatar-5.jpg" alt="avatar" />
+    </v-avatar>
+
+    <div class="text-xs-center">
+      <v-menu offset-y transition="scale-transition">
+        <template v-slot:activator="{ on }">
+          <div>
+            <span class="title grey--text font-weight-bold pt-3 ml-4" v-on="on">
+              Abhishek<v-icon>arrow_drop_down</v-icon></span
+            >
+          </div>
+        </template>
+
+        <v-list>
+          <v-list-tile
+            v-for="(dashItem, i) in dashItems"
+            :key="i"
+            router
+            :to="dashItem.route"
+          >
+            <v-list-tile-title
+              ><v-icon>{{ dashItem.icon }}</v-icon>
+              {{ dashItem.title }}
+            </v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
+    </div>
+    <v-btn
+      dark
+      color="grey darken-1"
+      class="subheading text-none"
+      depressed
+      flat
+      @click="logout()"
+    >
+      <span>Logout</span>
+      <v-icon right>logout</v-icon>
+    </v-btn>
+  </v-toolbar>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      dashItems: [
+        { title: "Profile", icon: "person", route: "/userprofile" },
+        { title: "Dashboard", icon: "space_dashboard", route: "/" },
+      ],
+    };
+  },
+  methods: {
+    logout() {
+      localStorage.clear();
+      this.$store.dispatch("logout");
+      this.$router.push("/login");
+    },
+  },
+};
+</script>

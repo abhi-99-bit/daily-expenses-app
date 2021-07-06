@@ -4,6 +4,7 @@ import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import Dashboard from "../components/DashboadComponent.vue";
 import RecoverPass from "../views/Forgotpass.vue";
+import UserProfile from "../components/UserProfile.vue";
 
 Vue.use(VueRouter);
 
@@ -23,6 +24,15 @@ const routes = [
     component: Login,
     meta: {
       requireAuth: false,
+    },
+    props: true,
+  },
+  {
+    path: "/userprofile",
+    name: "UserProfile",
+    component: UserProfile,
+    meta: {
+      reqiresAuth: true,
     },
     props: true,
   },

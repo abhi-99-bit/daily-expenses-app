@@ -82,17 +82,18 @@ export default new Vuex.Store({
           return error;
         });
     },
-    editExpenses({ commit }, payload) {
-      apiCall
-        .editExpenses(payload.id, payload.data)
-        .then(() => {
-          commit("EDIT_EXPENSES", payload);
-          this.dispatch("getTodayExpenses");
-          this.dispatch("getWeeklyExpenses");
-          this.dispatch("getMonthlyExpenses");
-        })
-        .catch((error) => console.error(error));
-      // return true;
+    async editExpenses({ commit }, { resolve, reject, payload }) {
+      const data = await apiCall.editExpenses(payload.id, payload.data);
+      console.log(data, "this is data");
+      if (data.status === 200) {
+        commit("EDIT_EXPENSES", payload);
+        await this.dispatch("getTodayExpenses");
+        await this.dispatch("getWeeklyExpenses");
+        await this.dispatch("getMonthlyExpenses");
+        resolve(data.statusText);
+      } else {
+        reject && reject();
+      }
     },
     deleteExpenses({ commit }, payload) {
       apiCall
@@ -120,8 +121,8 @@ export default new Vuex.Store({
           Promise.reject(error);
         });
     },
-    getTodayExpenses({ commit }) {
-      apiCall
+    async getTodayExpenses({ commit }) {
+      await apiCall
         .getTodayExpenses()
         .then((response) => {
           commit("TODAY_EXPENSES", response.data.data[0].total);
