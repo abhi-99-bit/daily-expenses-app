@@ -5,16 +5,16 @@
       <span>Expenses</span>
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-avatar size="50" outline class="pl-2">
-      <img src="../assets/avatar-5.jpg" alt="avatar" />
+    <v-avatar size="50" outline class="pl-2" v-if="showNavbar">
+      <img src="../assets/avatar-3.png" alt="avatar" />
     </v-avatar>
 
-    <div class="text-xs-center">
+    <div class="text-xs-center" v-if="showNavbar">
       <v-menu offset-y transition="scale-transition">
         <template v-slot:activator="{ on }">
           <div>
             <span class="title grey--text font-weight-bold pt-3 ml-4" v-on="on">
-              Abhishek<v-icon>arrow_drop_down</v-icon></span
+              {{ userName }}<v-icon>arrow_drop_down</v-icon></span
             >
           </div>
         </template>
@@ -35,6 +35,7 @@
       </v-menu>
     </div>
     <v-btn
+      v-if="showNavbar"
       dark
       color="grey darken-1"
       class="subheading text-none"
@@ -49,14 +50,19 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
+      userName: "",
       dashItems: [
         { title: "Profile", icon: "person", route: "/userprofile" },
         { title: "Dashboard", icon: "space_dashboard", route: "/" },
       ],
     };
+  },
+  mounted() {
+    this.setUserName();
   },
   methods: {
     logout() {
@@ -64,6 +70,12 @@ export default {
       this.$store.dispatch("logout");
       this.$router.push("/login");
     },
+    setUserName() {
+      this.userName = localStorage.fName + " " + localStorage.lName;
+    },
+  },
+  computed: {
+    ...mapGetters(["showNavbar"]),
   },
 };
 </script>

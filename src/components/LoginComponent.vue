@@ -93,14 +93,14 @@ export default {
     ],
   }),
   methods: {
-    validateData() {
+    async validateData() {
       if (this.$refs.form.validate() === true) {
         let userData = {
           email: this.email,
           password: this.password,
         };
         console.log(userData);
-        axios({
+        await axios({
           method: "POST",
           url: "http://localhost:3000/user/login",
           data: userData,
@@ -108,10 +108,10 @@ export default {
           .then((response) => {
             console.log(response);
             localStorage.setItem("token", response.data.token);
-            (this.$store.user = response.data.result[0].first_name),
-              // (this.$store.state.user_id = response.data.result[0].user_id);
-              // console.log(this.$store.state.user_id);
-              this.$router.push("/");
+            localStorage.setItem("fName", response.data.result[0].first_name);
+            localStorage.setItem("lName", response.data.result[0].last_name);
+            localStorage.setItem("email", response.data.result[0].email);
+            this.$router.push("/");
           })
           .catch((error) => {
             console.log(error);

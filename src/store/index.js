@@ -14,15 +14,21 @@ export default new Vuex.Store({
     dailyCount: 0,
     weeklyCount: 0,
     monthlyCount: 0,
+    showNavbar: false,
   },
   getters: {
     userExpenses: (state) => state.userExpenses,
     dailyCount: (state) => state.dailyCount,
     weeklyCount: (state) => state.weeklyCount,
     monthlyCount: (state) => state.monthlyCount,
+    showNavbar: (state) => state.showNavbar,
+    // userName: (state) => state.user.first_name,
   },
   mutations: {
     SET_EXPENSES(state, userExpenses) {
+      if (localStorage.token) {
+        this.state.showNavbar = true;
+      }
       state.userExpenses = userExpenses;
     },
     EDIT_EXPENSES(state, payload) {
@@ -63,6 +69,7 @@ export default new Vuex.Store({
       state.dailyCount = 0;
       state.weeklyCount = 0;
       state.monthlyCount = 0;
+      state.showNavbar = false;
     },
   },
   actions: {
@@ -95,31 +102,32 @@ export default new Vuex.Store({
         reject && reject();
       }
     },
-    deleteExpenses({ commit }, payload) {
-      apiCall
-        .deleteExpenses(payload.id)
-        .then(() => {
-          commit("DELETE_EXPENSES", payload);
-          this.dispatch("getTodayExpenses");
-          this.dispatch("getWeeklyExpenses");
-          this.dispatch("getMonthlyExpenses");
-        })
-        .catch((error) => console.error(error));
+    async deleteExpenses({ commit }, { resolve, reject, payload }) {
+      const data = await apiCall.deleteExpenses(payload.id);
+      if (data.status === 200) {
+        await commit("DELETE_EXPENSES", payload);
+        await this.dispatch("getTodayExpenses");
+        await this.dispatch("getWeeklyExpenses");
+        await this.dispatch("getMonthlyExpenses");
+        resolve && resolve();
+      } else {
+        reject && reject();
+      }
     },
-    async addExpenses({ commit }, payload) {
-      await apiCall
-        .addExpenses(payload)
-        .then((response) => {
-          commit("ADD_EXPENSES", payload);
-          this.dispatch("getTodayExpenses");
-          this.dispatch("getWeeklyExpenses");
-          this.dispatch("getMonthlyExpenses");
-          return response;
-        })
-        .catch((error) => {
-          console.log(error);
-          Promise.reject(error);
-        });
+    async addExpenses({ commit }, { resolve, reject, payload }) {
+      console.log(payload.data, "this is payload data");
+      let data = await apiCall.addExpenses(payload.data);
+      console.log(data);
+      if (data.status === 200) {
+        await commit("ADD_EXPENSES", payload.data);
+        await this.dispatch("getTodayExpenses");
+        await this.dispatch("getWeeklyExpenses");
+        await this.dispatch("getMonthlyExpenses");
+        this.dispatch("getUserExpenses");
+        resolve && resolve(data.statusText);
+      } else {
+        reject && reject();
+      }
     },
     async getTodayExpenses({ commit }) {
       await apiCall

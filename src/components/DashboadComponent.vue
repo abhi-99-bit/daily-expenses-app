@@ -24,9 +24,12 @@
                   >
                 </template>
                 <v-card>
-                  <v-card-title>
-                    <span class="headline">{{ formTitle }}</span>
+                  <v-card-title class="headline" primary-title>
+                    <span class="headline font-weight-medium">{{
+                      formTitle
+                    }}</span>
                   </v-card-title>
+                  <v-divider></v-divider>
                   <v-form ref="dialogForm" v-model="isValid" lazy-validation>
                     <v-card-text>
                       <v-container grid-list-md>
@@ -101,6 +104,7 @@
                         </v-layout>
                       </v-container>
                     </v-card-text>
+                    <v-divider></v-divider>
                     <v-card-actions>
                       <v-spacer></v-spacer>
                       <v-btn color="deep-purple darken-1" flat @click="close"
@@ -129,7 +133,14 @@
               class="elevation-1"
             >
               <template v-slot:items="props">
-                <td>{{ props.item.category }}</td>
+                <td>
+                  <v-chip color="purple lighten-3" text-color="black">
+                    <v-avatar>
+                      <v-icon>category</v-icon>
+                    </v-avatar>
+                    {{ props.item.category }}
+                  </v-chip>
+                </td>
                 <td class="justify-center">{{ props.item.price }}</td>
                 <td class="justify-center">{{ props.item.date }}</td>
                 <td class="justify-center">{{ props.item.discription }}</td>
@@ -163,6 +174,7 @@
       :discription="value"
       :cancel="cancel"
       :confirm="confirm"
+      :isConfirm="isConfirm"
     />
   </v-app>
 </template>
@@ -204,10 +216,17 @@ export default {
       date: "",
       discription: "",
       value: "",
+      isConfirm: false,
       showDialog: false,
       editedIndex: -1,
       deleteIndex: -1,
       editedItem: {
+        category: "",
+        price: null,
+        date: new Date().toISOString().substr(0, 10),
+        discription: "",
+      },
+      newItem: {
         category: "",
         price: null,
         date: new Date().toISOString().substr(0, 10),
@@ -274,20 +293,33 @@ export default {
       this.dialog = false;
       // setTimeout(() => {
       //   this.editedItem = Object.assign({}, this.defaultItem);
-      //   this.editedIndex = -1;
+        this.editedIndex = -1;
       // }, 300);
     },
     cancel() {
+      this.editedIndex = -1;
       this.$refs.dialogForm.resetValidation();
       this.$refs.dialogForm.reset();
       this.showDialog = false;
     },
     confirm() {
       console.log("confirm");
+      this.isConfirm = true;
       let payload = { id: this.deleteIndex };
-      this.$store.dispatch("deleteExpenses", payload);
-      this.deleteIndex = -1;
-      this.showDialog = false;
+      let isPromise = new Promise((resolve, reject) => {
+        this.$store.dispatch("deleteExpenses", { resolve, reject, payload });
+      });
+      isPromise
+        .then(() => {
+          this.isConfirm = false;
+          this.deleteIndex = -1;
+          this.showDialog = false;
+        })
+        .catch(() => {
+          this.isConfirm = false;
+          this.deleteIndex = -1;
+          this.showDialog = false;
+        });
     },
     save() {
       if (this.editedIndex > -1) {
@@ -306,42 +338,43 @@ export default {
             this.progress = false;
             console.log("promise" + " " + resolve);
             this.$refs.dialogForm.reset();
+            this.editedIndex = -1;
             this.close();
           })
           .catch(() => {
             this.progress = false;
             this.$refs.dialogForm.reset();
             this.close();
+            this.editedIndex = -1;
           });
       } else {
         if (this.$refs.dialogForm.validate() == true) {
-          let newList = {
-            category: this.editedItem.category,
-            price: this.editedItem.price,
-            date: this.editedItem.date,
-            discription: this.editedItem.discription,
+          let payload = {
+            data: this.editedItem,
           };
+          console.log(payload);
           this.progress = true;
-          console.log(newList);
-          let promise = this.$store.dispatch("addExpenses", newList);
-          promise
-            .then(() => {
+          let getPromise = new Promise((resolve, reject) => {
+            this.$store.dispatch("addExpenses", { resolve, reject, payload });
+          });
+          getPromise
+            .then((resolve) => {
               this.progress = false;
+              console.log(resolve);
               this.$refs.dialogForm.resetValidation();
               this.$refs.dialogForm.reset();
               this.close();
             })
-            .catch((error) => {
-              if (error) this.progress = true;
-              setTimeout(() => {
-                this.close();
-              }, 5000);
+            .catch(() => {
+              this.progress = false;
+              this.$refs.dialogForm.resetValidation();
+              this.$refs.dialogForm.reset();
+              this.close();
             });
         }
       }
-
-      // this.$refs.dialogForm.resetValidation();
-      // this.close();
+      this.$refs.dialogForm.resetValidation();
+      this.close();
     },
   },
 };
