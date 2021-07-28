@@ -111,10 +111,10 @@ export default {
           .then((response) => {
             console.log(response);
             localStorage.setItem("token", response.data.token);
-            localStorage.setItem("fName", response.data.result[0].first_name);
-            localStorage.setItem("lName", response.data.result[0].last_name);
-            localStorage.setItem("email", response.data.result[0].email);
-            localStorage.setItem("user_id", response.data.result[0].user_id);
+            localStorage.setItem("fName", response.data.results[0].first_name);
+            localStorage.setItem("lName", response.data.results[0].last_name);
+            localStorage.setItem("email", response.data.results[0].email);
+            localStorage.setItem("user_id", response.data.results[0].user_id);
             this.$store.dispatch("setSnackbar", {
               showing: true,
               color: "success",

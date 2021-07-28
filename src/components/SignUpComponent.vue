@@ -87,7 +87,7 @@
                         required
                       ></v-checkbox>
                     </v-flex>
-                    <v-flex xs12 md6  text-xs-center class="mt-2">
+                    <v-flex xs12 md6 text-xs-center class="mt-2">
                       <v-progress-circular
                         v-if="loader"
                         indeterminate
@@ -167,6 +167,11 @@ export default {
     validate() {
       if (this.$refs.form.validate() == false) {
         this.snackbar = true;
+        this.$store.dispatch("setSnackbar", {
+          showing: true,
+          color: "error",
+          text: "Enter Valid Details",
+        });
       } else {
         this.user_data = {
           first_name: this.firstname,
@@ -181,7 +186,7 @@ export default {
         console.log(payload);
         this.loader = true;
         let signupPromise = new Promise((resolve, reject) => {
-           this.$store.dispatch("signupUser", { resolve, reject, payload });
+          this.$store.dispatch("signupUser", { resolve, reject, payload });
         });
         signupPromise
           .then(() => {
@@ -201,7 +206,6 @@ export default {
             });
             console.error();
             this.loader = false;
-             
           });
         // axios({
         //   method: "POST",
