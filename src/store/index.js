@@ -1,20 +1,21 @@
 // commit from store
 // dispatch from components
-import Vuex from "vuex";
 import Vue from "vue";
+import Vuex from "vuex";
 // import axios from "axios";
 import { apiCall } from "../service";
-
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
     userExpenses: [],
-    user: [],
+    user: {},
     dailyCount: 0,
     weeklyCount: 0,
     monthlyCount: 0,
     showNavbar: false,
+    loading: false,
+    snackbar: {},
   },
   getters: {
     userExpenses: (state) => state.userExpenses,
@@ -22,23 +23,26 @@ export default new Vuex.Store({
     weeklyCount: (state) => state.weeklyCount,
     monthlyCount: (state) => state.monthlyCount,
     showNavbar: (state) => state.showNavbar,
-    // userName: (state) => state.user.first_name,
+    user: (state) => state.user,
+    userFullName: (state) => state.user.first_name + " " + state.user.last_name,
+    loadTable: (state) => state.loading,
   },
   mutations: {
     SET_EXPENSES(state, userExpenses) {
       if (localStorage.token) {
         this.state.showNavbar = true;
       }
-      state.userExpenses = userExpenses;
+      (state.loading = false), (state.userExpenses = userExpenses);
     },
     EDIT_EXPENSES(state, payload) {
       const index = state.userExpenses.map((o) => o.id).indexOf(payload.id);
       state.userExpenses.splice(index, 1, payload.data);
       this.dispatch("getUserExpenses");
     },
+
     DELETE_EXPENSES(state, payload) {
       const index = state.userExpenses.findIndex(
-        (expenses) => expenses.id == payload.id
+        (expenses) => expenses.id === payload.id
       );
       state.userExpenses.splice(index, 1);
     },
@@ -56,14 +60,18 @@ export default new Vuex.Store({
       console.log(this.dailyCount);
     },
     MONTHLY_EXPENSES(state, payload) {
-      state.monthlyCount = payload;
+      (state.loading = false), (state.monthlyCount = payload);
       // console.log(payload.total)
       console.log(this.dailyCount);
     },
     SET_USER_DETAILS(state, payload) {
-      state.user = payload;
-      console.log(payload);
+      state.user = payload[0];
+      console.log(this.state.user);
+      if (localStorage.token) {
+        this.state.showNavbar = true;
+      }
     },
+    USER_SIGNUP() {},
     resetAllState(state) {
       state.userExpenses = [];
       state.dailyCount = 0;
@@ -71,13 +79,16 @@ export default new Vuex.Store({
       state.monthlyCount = 0;
       state.showNavbar = false;
     },
+    SET_SNACKBAR(state, snackbar) {
+      state.snackbar = snackbar;
+    },
   },
   actions: {
     getUserExpenses({ commit }) {
       apiCall
         .getExpenses()
         .then((response) => {
-          commit("SET_EXPENSES", response.data);
+          (this.state.loading = true), commit("SET_EXPENSES", response.data);
           this.dispatch("getTodayExpenses");
           this.dispatch("getWeeklyExpenses");
           this.dispatch("getMonthlyExpenses");
@@ -94,9 +105,10 @@ export default new Vuex.Store({
       console.log(data, "this is data");
       if (data.status === 200) {
         commit("EDIT_EXPENSES", payload);
-        await this.dispatch("getTodayExpenses");
-        await this.dispatch("getWeeklyExpenses");
-        await this.dispatch("getMonthlyExpenses");
+        this.dispatch("getTodayExpenses");
+        this.dispatch("getWeeklyExpenses");
+        this.dispatch("getMonthlyExpenses");
+        this.dispatch("getUserExpenses");
         resolve(data.statusText);
       } else {
         reject && reject();
@@ -105,10 +117,11 @@ export default new Vuex.Store({
     async deleteExpenses({ commit }, { resolve, reject, payload }) {
       const data = await apiCall.deleteExpenses(payload.id);
       if (data.status === 200) {
-        await commit("DELETE_EXPENSES", payload);
-        await this.dispatch("getTodayExpenses");
-        await this.dispatch("getWeeklyExpenses");
-        await this.dispatch("getMonthlyExpenses");
+        commit("DELETE_EXPENSES", payload);
+        this.dispatch("getTodayExpenses");
+        this.dispatch("getWeeklyExpenses");
+        this.dispatch("getMonthlyExpenses");
+        this.dispatch("getUserExpenses");
         resolve && resolve();
       } else {
         reject && reject();
@@ -130,13 +143,14 @@ export default new Vuex.Store({
       }
     },
     async getTodayExpenses({ commit }) {
-      await apiCall
-        .getTodayExpenses()
-        .then((response) => {
-          commit("TODAY_EXPENSES", response.data.data[0].total);
-          console.log(response.data.data[0].total);
-        })
-        .catch((error) => console.error(error));
+      (this.state.loading = true),
+        await apiCall
+          .getTodayExpenses()
+          .then((response) => {
+            commit("TODAY_EXPENSES", response.data.data[0].total);
+            console.log(response.data.data[0].total);
+          })
+          .catch((error) => console.error(error));
     },
     getWeeklyExpenses({ commit }) {
       apiCall
@@ -156,6 +170,9 @@ export default new Vuex.Store({
         })
         .catch((error) => console.error(error));
     },
+    setSnackbar({ commit }, snackbar) {
+      commit("SET_SNACKBAR", snackbar);
+    },
     getUser({ commit }) {
       apiCall
         .getUserDetails()
@@ -166,7 +183,18 @@ export default new Vuex.Store({
         })
         .catch((error) => console.error(error));
     },
-
+    async signupUser({ commit }, { resolve, reject, payload }) {
+      let data = await apiCall.userSignup(payload.data);
+      console.log(data.status);
+      console.log(data.data);
+      if (data.data.errors) {
+        commit("USER_SIGNUP");
+        reject && reject();
+      } else {
+        
+        resolve && resolve();
+      } 
+    },
     logout({ commit }) {
       commit("resetAllState");
     },

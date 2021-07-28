@@ -2,11 +2,9 @@
 <template>
   <div>
     <div>
-      <h3 class="grey--text mt-5 ml-5 font-weight-black display-1">
-        My Profile
-      </h3>
+      <h2 class="black--text mt-5 ml-5 font-weight-black display-1">My Profile</h2>
     </div>
-    <v-container  class="my-4">
+    <v-container class="my-4">
       <v-card height="200" flat>
         <v-layout row wrap>
           <v-flex xs4>
@@ -116,17 +114,25 @@
 import { mapGetters } from "vuex";
 export default {
   data: () => ({
+    // user: this.$store.state.user,
+    currentUser: {
+      firstName: localStorage.fName,
+      lastName: localStorage.lName,
+      email: localStorage.email,
+      user_id: localStorage.user_id,
+    },
     showDialog: false,
+    deleteIndex: null,
     editUser: {
       firstName: "",
       lastName: "",
       email: "",
     },
-    labels: ["$200", "$290", "$600", "$330", "$700", "$790", "$810"],
+    labels: ["Jan", "Feb", "March", "April", "May", "June", "July"],
     value: [423, 446, 675, 510, 590, 610, 760],
   }),
   computed: {
-    ...mapGetters([]),
+    ...mapGetters(["user"]),
     userName() {
       return localStorage.fName + " " + localStorage.lName;
     },
@@ -134,17 +140,19 @@ export default {
       return localStorage.email;
     },
   },
+  mounted() {
+    this.getUserDetails();
+    console.log(this.user);
+  },
   methods: {
     showDialogBox() {
       this.showDialog = true;
-      this.editUser = Object.assign(
-        {},
-        {
-          firstName: localStorage.fName,
-          lastName: localStorage.lName,
-          email: localStorage.email,
-        }
-      );
+      this.deleteIndex = this.currentUser.user_id;
+      console.log(this.deleteIndex);
+      this.editUser = Object.assign({}, this.currentUser);
+    },
+    getUserDetails() {
+      this.$store.dispatch("getUser");
     },
     cancel() {
       this.showDialog = false;

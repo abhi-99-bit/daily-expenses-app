@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <Navbar />
+    <Snackbar />
     <v-content>
       <router-view></router-view>
     </v-content>
@@ -10,10 +11,13 @@
 
 <script>
 import Navbar from "@/components/Navbar";
-import BottomNav from "@/components/BottomNav"
+import BottomNav from "@/components/BottomNav";
+import Snackbar from "@//components/snackbar.vue";
+
 export default {
   name: "App",
-  components: { Navbar , BottomNav },
+  components: { Navbar , BottomNav ,Snackbar },
+ 
 };
 </script>
 

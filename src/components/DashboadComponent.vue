@@ -1,6 +1,7 @@
+/* eslint-disable no-useless-escape */
 <template>
   <v-app>
-    <h1 class="grey--text mt-5 ml-5 font-weight-black">MY DASHBOARD</h1>
+    <h1 class="mt-5 ml-5 mb-5 font-weight-bold black--text">MY DASHBOARD</h1>
     <CardView />
     <v-container fulid class="my-4">
       <v-layout row wrap>
@@ -8,7 +9,7 @@
           <!--  TABLE VIEW -->
           <div>
             <v-toolbar flat color="white">
-              <v-toolbar-title class="grey--text"
+              <v-toolbar-title class="black--text"
                 >MY LIST OF EXPENSES</v-toolbar-title
               >
               <v-divider class="mx-2" inset vertical></v-divider>
@@ -16,9 +17,9 @@
 
               <v-dialog v-model="dialog" max-width="500px">
                 <template v-slot:activator="{ on }">
-                  <v-btn flat class="mb-2" v-on="on" color="grey" dark>
+                  <v-btn flat class="mb-2" v-on="on" color="black" dark>
                     Add List
-                    <v-icon color="grey" size="33" right
+                    <v-icon color="black" size="33" right
                       >playlist_add</v-icon
                     ></v-btn
                   >
@@ -44,6 +45,8 @@
                                 'Entertainment',
                                 'Food',
                                 'Shopping',
+                                'Subscription',
+                                'Recharge',
                               ]"
                               :rules="[(v) => !!v || 'Item is required']"
                               label="Select Category*"
@@ -132,6 +135,11 @@
               :items="userExpenses"
               class="elevation-1"
             >
+              <template v-slot:no-data>
+                <v-alert :value="true" color="error" icon="warning">
+                  Sorry, nothing to display here :(
+                </v-alert>
+              </template>
               <template v-slot:items="props">
                 <td>
                   <v-chip color="purple lighten-3" text-color="black">
@@ -193,7 +201,11 @@ export default {
     return {
       items: [{ title: "Today" }, { title: "Week" }, { title: "Month" }],
       isValid: true,
+      snackbar: true,
+      snackbarText: "Hello, I'm a snackbar",
+      color: "info",
       userName: "",
+      showData: true,
       vaild: "true",
       search: "",
       dialog: false,
@@ -241,7 +253,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["userExpenses"]),
+    ...mapGetters(["userExpenses", "loadTable"]),
     pages() {
       if (
         this.pagination.rowsPerPage == null ||
@@ -270,6 +282,7 @@ export default {
   methods: {
     userExpensesInitialization() {
       this.$store.dispatch("getUserExpenses");
+      //  this.showData = false;
     },
     clickMe() {
       console.log("hello");
@@ -290,15 +303,18 @@ export default {
     },
 
     close() {
-      this.dialog = false;
       // setTimeout(() => {
       //   this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
+      this.editedIndex = -1;
       // }, 300);
+      this.$refs.dialogForm.resetValidation();
+      this.$refs.dialogForm.reset();
+      this.dialog = false;
     },
     cancel() {
       this.editedIndex = -1;
-      this.$refs.dialogForm.resetValidation();
+      // this.$refs.dialogForm.resetValidation();
+      this.close();
       this.$refs.dialogForm.reset();
       this.showDialog = false;
     },
@@ -311,6 +327,11 @@ export default {
       });
       isPromise
         .then(() => {
+          this.$store.dispatch("setSnackbar", {
+            showing: true,
+            color: "error",
+            text: "Your list deleted successfully",
+          });
           this.isConfirm = false;
           this.deleteIndex = -1;
           this.showDialog = false;
@@ -335,10 +356,15 @@ export default {
         });
         promise
           .then((resolve) => {
-            this.progress = false;
             console.log("promise" + " " + resolve);
             this.$refs.dialogForm.reset();
             this.editedIndex = -1;
+            this.progress = false;
+            this.$store.dispatch("setSnackbar", {
+              showing: true,
+              color: "success",
+              text: "Your list successfully edit!",
+            });
             this.close();
           })
           .catch(() => {
@@ -363,6 +389,11 @@ export default {
               console.log(resolve);
               this.$refs.dialogForm.resetValidation();
               this.$refs.dialogForm.reset();
+              this.$store.dispatch("setSnackbar", {
+                showing: true,
+                color: "success",
+                text: "Your list successfully added!",
+              });
               this.close();
             })
             .catch(() => {
@@ -373,8 +404,8 @@ export default {
             });
         }
       }
-      this.$refs.dialogForm.resetValidation();
-      this.close();
+
+      // this.close();
     },
   },
 };

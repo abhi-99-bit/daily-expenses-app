@@ -12,9 +12,7 @@
                     Create an account
                   </h1>
                   <div>
-                    <h3 class="context grey--text darken-4">
-                      it's quick and esay.
-                    </h3>
+                    <h3 class="subheading black--text">it's quick and esay.</h3>
                   </div>
                 </div>
               </v-card-title>
@@ -85,13 +83,20 @@
                         label="accept terms & conditions"
                         :rules="[(v) => !!v || 'You must agree to continue!']"
                         v-model="checkbox"
+                        color="black--text"
                         required
                       ></v-checkbox>
                     </v-flex>
-                    <v-flex xs12 md6 class="mt-2">
+                    <v-flex xs12 md6  text-xs-center class="mt-2">
+                      <v-progress-circular
+                        v-if="loader"
+                        indeterminate
+                        color="purple"
+                      ></v-progress-circular>
                       <v-btn
+                        v-else
                         block
-                        color="deep-purple darken-1"
+                        color="deep-purple darken-1 white--text"
                         size="80"
                         :disabled="!valid"
                         @click="validate"
@@ -101,6 +106,14 @@
                   </v-layout>
                 </v-card-actions>
               </v-form>
+              <v-layout justify-center row wrap>
+                <v-flex text-xs-center xs12>
+                  <span class="subheading"> Already Have Account ?</span
+                  ><span class="pl-1"
+                    ><router-link to="/login">Click Here</router-link></span
+                  >
+                </v-flex>
+              </v-layout>
             </v-card>
           </v-flex>
           <v-flex xs12 sm3 md3> </v-flex>
@@ -111,10 +124,12 @@
 </template>
 
 <script>
-import axios from "axios";
+// import axios from "axios";
 export default {
   data: () => ({
     valid: true,
+    loader: false,
+    user_data: {},
     firstname: "",
     nameRules: [
       (v) => !!v || "Name is required",
@@ -153,27 +168,55 @@ export default {
       if (this.$refs.form.validate() == false) {
         this.snackbar = true;
       } else {
-        let user_data = {
+        this.user_data = {
           first_name: this.firstname,
           last_name: this.lastname,
           email: this.email,
           password: this.password,
           accept_tc: this.checkbox == true ? 1 : 0,
         };
-        console.log(user_data);
-        axios({
-          method: "POST",
-          url: "http://localhost:3000/users",
-          data: user_data,
-        })
-          .then((response) => {
-            if (response.status === 200) {
-              this.$router.push("/login");
-            }
+        let payload = {
+          data: this.user_data,
+        };
+        console.log(payload);
+        this.loader = true;
+        let signupPromise = new Promise((resolve, reject) => {
+           this.$store.dispatch("signupUser", { resolve, reject, payload });
+        });
+        signupPromise
+          .then(() => {
+            this.loader = false;
+            this.$store.dispatch("setSnackbar", {
+              showing: true,
+              color: "success",
+              text: "User Signup Sucessfully!",
+            });
+            this.$router.push("/login");
           })
-          .catch(function (error) {
-            console.log(error);
+          .catch(() => {
+            this.$store.dispatch("setSnackbar", {
+              showing: true,
+              color: "error",
+              text: "email is already in use",
+            });
+            console.error();
+            this.loader = false;
+             
           });
+        // axios({
+        //   method: "POST",
+        //   url: "http://localhost:3000/users",
+        //   data: payload,
+        // })
+        //   .then((response) => {
+        //     console.log(response);
+        //     if (response.status === 200) {
+        //       // this.$router.push("/login");
+        //     }
+        //   })
+        //   .catch( (error) => {
+        //     console.log(error);
+        //   });
       }
     },
   },

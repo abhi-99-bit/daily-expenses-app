@@ -20,7 +20,12 @@
                     <v-icon>event</v-icon>Today
                   </h3>
                   <div>
-                    <span class="display-1 font-weight-bold">{{
+                    <span
+                      class="display-1 font-weight-bold"
+                      v-if="dailyCount === null"
+                      >0</span
+                    >
+                    <span class="display-1 font-weight-bold" v-else>{{
                       dailyCount
                     }}</span>
                     <span class="subheading"> Total</span>
@@ -48,6 +53,11 @@
                     <v-icon>date_range</v-icon> Weekly
                   </h3>
                   <div>
+                    <span
+                      class="display-1 font-weight-bold"
+                      v-if="weeklyCount === null"
+                      >0</span
+                    >
                     <span class="display-1 font-weight-bold">{{
                       weeklyCount
                     }}</span>
@@ -76,7 +86,13 @@
                     <v-icon>calendar_today</v-icon> Monthly
                   </h3>
                   <div>
+                   <span
+                      class="display-1 font-weight-bold"
+                      v-if="monthlyCount === null"
+                      >0</span
+                    >
                     <span
+                      v-else
                       class="display-1 font-weight-bold"
                       color=" grey darken-3"
                       >{{ monthlyCount }}</span
@@ -96,11 +112,15 @@
 import { mapGetters } from "vuex";
 export default {
   data: () => ({
+    showloading: true,
     labels: ["12am", "3am", "6am", "9am", "12pm", "3pm", "6pm", "9pm"],
     value: [200, 675, 410, 390, 310, 460, 250, 240],
   }),
   computed: {
-    ...mapGetters(["dailyCount", "weeklyCount", "monthlyCount"]),
+    ...mapGetters(["dailyCount", "weeklyCount", "monthlyCount", "loadTable"]),
+  },
+  mounted() {
+    this.showloading = true;
   },
 };
 </script>

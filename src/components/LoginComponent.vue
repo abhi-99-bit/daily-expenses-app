@@ -1,3 +1,4 @@
+/* eslint-disable vue/no-parsing-error */
 <template>
   <div>
     <v-app class="grey lighten-3">
@@ -59,7 +60,9 @@
                 </v-card-actions>
                 <v-card-title class="justify-center">
                   <span class="heading"> Don't Have Account ?</span
-                  ><span class="pl-1"><a href="/register">Click Here</a></span>
+                  ><span class="pl-1"
+                    ><router-link to="/register">Click Here</router-link></span
+                  >
                 </v-card-title>
               </v-card>
             </v-flex>
@@ -111,12 +114,28 @@ export default {
             localStorage.setItem("fName", response.data.result[0].first_name);
             localStorage.setItem("lName", response.data.result[0].last_name);
             localStorage.setItem("email", response.data.result[0].email);
+            localStorage.setItem("user_id", response.data.result[0].user_id);
+            this.$store.dispatch("setSnackbar", {
+              showing: true,
+              color: "success",
+              text: "logging successfully",
+            });
             this.$router.push("/");
           })
           .catch((error) => {
+            this.$store.dispatch("setSnackbar", {
+              showing: true,
+              color: "error",
+              text: "Enter valid details",
+            });
             console.log(error);
           });
       } else {
+        this.$store.dispatch("setSnackbar", {
+          showing: true,
+          color: "error",
+          text: "Enter Logging details",
+        });
         console.log("Enter Valid Fields");
       }
     },
