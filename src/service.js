@@ -4,10 +4,10 @@ import axios from "axios";
 require(`dotenv`).config();
 axios.defaults.baseURL = process.env.API_END_POINT;
 axios.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem("token");
-        if (token) {
-        // NProgress.start(),
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      // NProgress.start(),
       config.headers["Authorization"] = "Bearer " + token;
     }
     return config;
@@ -51,5 +51,8 @@ export const apiCall = {
   },
   userSignup(data) {
     return axios.post(`/users`, data);
+  },
+  userLogin(data) {
+    return axios.post(`/user/login`, data);
   },
 };

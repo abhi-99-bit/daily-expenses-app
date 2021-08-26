@@ -2,7 +2,9 @@
 <template>
   <div>
     <div>
-      <h2 class="black--text mt-5 ml-5 font-weight-black display-1">My Profile</h2>
+      <h2 class="black--text mt-5 ml-5 font-weight-black display-1">
+        My Profile
+      </h2>
     </div>
     <v-container class="my-4">
       <v-card height="200" flat>

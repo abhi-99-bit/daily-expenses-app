@@ -2,8 +2,8 @@
   <v-toolbar flat app>
     <v-toolbar-title class="text-uppercase grey--text">
       <router-link to="/">
-      <span class="font-weight-light black--text">Daily</span>
-      <span class="font-weight-bold black--text">-Expenses</span>
+        <span class="font-weight-light black--text">Daily</span>
+        <span class="font-weight-bold black--text">-Expenses</span>
       </router-link>
     </v-toolbar-title>
     <v-spacer></v-spacer>
@@ -74,11 +74,10 @@ export default {
       localStorage.clear();
       this.$store.dispatch("logout");
       this.$router.push("/login");
-    }
-    
+    },
   },
   computed: {
-    ...mapGetters(["showNavbar","userFullName"]),
+    ...mapGetters(["showNavbar", "userFullName"]),
     // userName() {
     //   return this.$store.getter.userFullName;
     // },

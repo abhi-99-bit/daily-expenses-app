@@ -6,8 +6,8 @@ import Vuetify from "vuetify";
 import "vuetify/dist/vuetify.min.css";
 import store from "./store/index";
 
+Vue.use(router);
 Vue.use(Vuetify);
-
 Vue.config.productionTip = false;
 
 new Vue({

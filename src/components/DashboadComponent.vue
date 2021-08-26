@@ -17,7 +17,14 @@
 
               <v-dialog v-model="dialog" max-width="500px">
                 <template v-slot:activator="{ on }">
-                  <v-btn flat class="mb-2" v-on="on" color="black" dark>
+                  <v-btn
+                    flat
+                    class="mb-2"
+                    v-on="on"
+                    color="black"
+                    dark
+                    id="dash-addList"
+                  >
                     Add List
                     <v-icon color="black" size="33" right
                       >playlist_add</v-icon
@@ -37,6 +44,7 @@
                         <v-layout wrap>
                           <v-flex xs12 sm6 md12>
                             <v-select
+                              id="dash-category"
                               prepend-icon="category"
                               color="deep-purple darken-1"
                               :items="[
@@ -57,6 +65,7 @@
                           </v-flex>
                           <v-flex xs12 sm6 md6>
                             <v-text-field
+                              id="dash-cost"
                               color="deep-purple darken-1"
                               label="Cost"
                               :rules="[(v) => !!v || 'Cost is required']"
@@ -68,8 +77,9 @@
                             ></v-text-field>
                           </v-flex>
                           <v-flex xs12 sm6 md6>
-                            <v-menu>
+                            <v-menu data-app>
                               <v-text-field
+                                id="dash-date"
                                 color="deep-purple darken-1"
                                 slot="activator"
                                 label="Date"
@@ -90,6 +100,7 @@
                           </v-flex>
                           <v-flex xs12 sm6 md12>
                             <v-textarea
+                              id="dash-discription"
                               color="deep-purple darken-1"
                               label="discription"
                               prepend-icon="description"
@@ -119,6 +130,7 @@
                         color="purple"
                       ></v-progress-circular>
                       <v-btn
+                        id="dash-savebutton"
                         v-else
                         color="deep-purple darken-1"
                         flat
@@ -154,15 +166,16 @@
                 <td class="justify-center">{{ props.item.discription }}</td>
                 <td class="justify-center layout px-0">
                   <v-icon
+                    :id="`dash-editBtn-${props.item.post_id}`"
                     small
                     class="mr-2 black--text"
                     @click.prevent="editItem(props.item)"
                   >
                     edit
                   </v-icon>
-
                   <v-divider class="mx-2" inset vertical></v-divider>
                   <v-icon
+                    :id="`dash-deleteBtn-${props.item.post_id}`"
                     small
                     class="red--text"
                     @click.prevent="deleteItem(props.item)"
@@ -253,7 +266,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["userExpenses", "loadTable"]),
+    ...mapGetters(["userExpenses"]),
     pages() {
       if (
         this.pagination.rowsPerPage == null ||
@@ -282,7 +295,6 @@ export default {
   methods: {
     userExpensesInitialization() {
       this.$store.dispatch("getUserExpenses");
-      //  this.showData = false;
     },
     clickMe() {
       console.log("hello");
@@ -290,7 +302,7 @@ export default {
     editItem(item) {
       // this.editedIndex = this.userExpenses.indexOf(item);
       this.editedIndex = item.post_id;
-      console.log(this.editedIndex);
+      console.log(this.editedIndex, "this is edit id");
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
@@ -329,7 +341,7 @@ export default {
         .then(() => {
           this.$store.dispatch("setSnackbar", {
             showing: true,
-            color: "error",
+            color: "green",
             text: "Your list deleted successfully",
           });
           this.isConfirm = false;
@@ -343,6 +355,7 @@ export default {
         });
     },
     save() {
+      console.log("save button call");
       if (this.editedIndex > -1) {
         console.log("this is edit item", this.editedIndex, this.editedItem);
         let payload = {
@@ -375,10 +388,11 @@ export default {
           });
       } else {
         if (this.$refs.dialogForm.validate() == true) {
+          console.log("this is add expensess-------------");
           let payload = {
             data: this.editedItem,
           };
-          console.log(payload);
+          // console.log(payload);
           this.progress = true;
           let getPromise = new Promise((resolve, reject) => {
             this.$store.dispatch("addExpenses", { resolve, reject, payload });
@@ -402,6 +416,13 @@ export default {
               this.$refs.dialogForm.reset();
               this.close();
             });
+        } else {
+          console.log("there are errors in form");
+          this.$store.dispatch("setSnackbar", {
+            showing: true,
+            color: "red",
+            text: "Enter Valid details",
+          });
         }
       }
 

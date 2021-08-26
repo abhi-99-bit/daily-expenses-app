@@ -25,9 +25,12 @@
                       v-if="dailyCount === null"
                       >0</span
                     >
-                    <span class="display-1 font-weight-bold" v-else>{{
-                      dailyCount
-                    }}</span>
+                    <span
+                      class="display-1 font-weight-bold"
+                      data-testid="daily-count"
+                      v-else
+                      >{{ dailyCount }}</span
+                    >
                     <span class="subheading"> Total</span>
                   </div>
                 </div>
@@ -58,9 +61,11 @@
                       v-if="weeklyCount === null"
                       >0</span
                     >
-                    <span class="display-1 font-weight-bold">{{
-                      weeklyCount
-                    }}</span>
+                    <span
+                      class="display-1 font-weight-bold"
+                      data-testid="weekly-count"
+                      >{{ weeklyCount }}</span
+                    >
                     <span class="subheading">Total</span>
                   </div>
                 </div>
@@ -86,7 +91,7 @@
                     <v-icon>calendar_today</v-icon> Monthly
                   </h3>
                   <div>
-                   <span
+                    <span
                       class="display-1 font-weight-bold"
                       v-if="monthlyCount === null"
                       >0</span
@@ -95,6 +100,7 @@
                       v-else
                       class="display-1 font-weight-bold"
                       color=" grey darken-3"
+                      data-testid="monthly-count"
                       >{{ monthlyCount }}</span
                     >
                     <span class="subheading">Total</span>
@@ -117,7 +123,7 @@ export default {
     value: [200, 675, 410, 390, 310, 460, 250, 240],
   }),
   computed: {
-    ...mapGetters(["dailyCount", "weeklyCount", "monthlyCount", "loadTable"]),
+    ...mapGetters(["dailyCount", "weeklyCount", "monthlyCount"]),
   },
   mounted() {
     this.showloading = true;

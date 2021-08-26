@@ -22,6 +22,7 @@
                   <v-text-field
                     v-model="email"
                     outline
+                    id="login-email"
                     label="Email"
                     :rules="emailRules"
                     size="40"
@@ -33,6 +34,7 @@
                     outline
                     color="grey"
                     v-model="password"
+                    id="login-password"
                     :rules="passwordRules"
                     :type="showpassword ? 'text' : 'password'"
                     label="password"
@@ -42,21 +44,35 @@
                     @click:append="showpassword = !showpassword"
                     required
                   />
-                  <span class="subheading light-blue--text lighten-1"
-                    ><a href="/resetpassword">Forgot Password?</a></span
+                  <span
+                    class="subheading light-blue--text lighten-1"
+                    id="login-resetpassword"
                   >
+                    <router-link to="/resetpassword"
+                      >Forgot Password?</router-link
+                    >
+                  </span>
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn
-                    dark
-                    block
-                    color="deep-purple darken-1"
-                    depressed
-                    class="mx-2"
-                    text-nones
-                    @click="validateData()"
-                    >login</v-btn
-                  >
+                  <v-flex xs12>
+                    <v-progress-circular
+                      v-if="loader"
+                      indeterminate
+                      color="purple"
+                    ></v-progress-circular>
+                    <v-btn
+                      v-else
+                      dark
+                      block
+                      id="login-button"
+                      color="deep-purple darken-1"
+                      depressed
+                      class="mx-auto"
+                      text-nones
+                      @click="validateData()"
+                      >login</v-btn
+                    >
+                  </v-flex>
                 </v-card-actions>
                 <v-card-title class="justify-center">
                   <span class="heading"> Don't Have Account ?</span
@@ -75,12 +91,14 @@
 </template>
 
 <script>
-import axios from "axios";
+// import axios from "axios";
 export default {
   name: "LoginPage",
   data: () => ({
+    loader: false,
     showpassword: false,
     valid: true,
+    user: {},
     email: "",
     emailRules: [
       (v) => !!v || "E-mail is required",
@@ -98,31 +116,31 @@ export default {
   methods: {
     async validateData() {
       if (this.$refs.form.validate() === true) {
-        let userData = {
+        this.user = {
           email: this.email,
           password: this.password,
         };
-        console.log(userData);
-        await axios({
-          method: "POST",
-          url: "http://localhost:3000/user/login",
-          data: userData,
-        })
+        let payload = {
+          data: this.user,
+        };
+        this.loader = true;
+        console.log(this.user);
+        let loginPromise = new Promise((resolve, reject) => {
+          this.$store.dispatch("loginUser", { resolve, reject, payload });
+        });
+        loginPromise
           .then((response) => {
             console.log(response);
-            localStorage.setItem("token", response.data.token);
-            localStorage.setItem("fName", response.data.results[0].first_name);
-            localStorage.setItem("lName", response.data.results[0].last_name);
-            localStorage.setItem("email", response.data.results[0].email);
-            localStorage.setItem("user_id", response.data.results[0].user_id);
+            this.loader = false;
             this.$store.dispatch("setSnackbar", {
               showing: true,
               color: "success",
               text: "logging successfully",
             });
-            this.$router.push("/");
+            this.$router.push("/").catch(() => {});
           })
           .catch((error) => {
+            this.loader = false;
             this.$store.dispatch("setSnackbar", {
               showing: true,
               color: "error",
@@ -131,12 +149,12 @@ export default {
             console.log(error);
           });
       } else {
+        console.log("Enter Valid Fields");
         this.$store.dispatch("setSnackbar", {
           showing: true,
           color: "error",
           text: "Enter Logging details",
         });
-        console.log("Enter Valid Fields");
       }
     },
   },

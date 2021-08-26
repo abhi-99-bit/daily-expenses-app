@@ -2,10 +2,11 @@
   <v-card>
     <v-snackbar
       v-model="snackbar.showing"
+      bottom
       :timeout="4000"
       multi-line
-      :color= "snackbar.color"
-      top
+      :color="snackbar.color"
+      right
     >
       {{ snackbar.text }}
       <v-btn dark flat @click="snackbar.showing = false"> Close </v-btn>
@@ -14,10 +15,10 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 export default {
-  computed:{
-    ...mapState(["snackbar"])
-  }
+  computed: {
+    ...mapState(["snackbar"]),
+  },
 };
 </script>

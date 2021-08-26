@@ -16,7 +16,13 @@
                 <v-card-title>
                   <div>
                     <h3
-                      class="display-1 pt-4 black--text darken-5 font-weight-medium"
+                      class="
+                        display-1
+                        pt-4
+                        black--text
+                        darken-5
+                        font-weight-medium
+                      "
                     >
                       Reset Your Password
                     </h3>

@@ -16,8 +16,7 @@ import Snackbar from "@//components/snackbar.vue";
 
 export default {
   name: "App",
-  components: { Navbar , BottomNav ,Snackbar },
- 
+  components: { Navbar, BottomNav, Snackbar },
 };
 </script>
 
