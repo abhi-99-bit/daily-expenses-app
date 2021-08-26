@@ -124,13 +124,12 @@ export default {
           data: this.user,
         };
         this.loader = true;
-        console.log(this.user);
+
         let loginPromise = new Promise((resolve, reject) => {
           this.$store.dispatch("loginUser", { resolve, reject, payload });
         });
         loginPromise
-          .then((response) => {
-            console.log(response);
+          .then(() => {
             this.loader = false;
             this.$store.dispatch("setSnackbar", {
               showing: true,
@@ -139,17 +138,15 @@ export default {
             });
             this.$router.push("/").catch(() => {});
           })
-          .catch((error) => {
+          .catch(() => {
             this.loader = false;
             this.$store.dispatch("setSnackbar", {
               showing: true,
               color: "error",
               text: "Enter valid details",
             });
-            console.log(error);
           });
       } else {
-        console.log("Enter Valid Fields");
         this.$store.dispatch("setSnackbar", {
           showing: true,
           color: "error",

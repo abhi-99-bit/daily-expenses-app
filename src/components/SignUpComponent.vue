@@ -178,16 +178,6 @@ export default {
   },
   methods: {
     signupUserFn() {
-      console.log(
-        this.$refs.form.validate(),
-        "---------------",
-        this.firstname,
-        this.lastname,
-        this.email,
-        this.password,
-        this.confirmPassword,
-        this.checkbox
-      );
       if (this.$refs.form.validate() === false) {
         this.snackbar = true;
         this.$store.dispatch("setSnackbar", {
@@ -206,17 +196,14 @@ export default {
         let payload = {
           data: this.user_data,
         };
-        console.log(payload);
         this.loader = true;
         let signupPromise = new Promise((resolve, reject) => {
-          console.log("hello there");
           this.$store.dispatch("signupUser", { resolve, reject, payload });
         });
         signupPromise
           .then(() => {
-            console.log("Hi");
             this.loader = false;
-            console.log(this.loader);
+
             this.$store.dispatch("setSnackbar", {
               showing: true,
               color: "success",
@@ -225,14 +212,12 @@ export default {
             this.$router.push("/login");
           })
           .catch(() => {
-            console.log("email already in use");
             this.$store.dispatch("setSnackbar", {
               showing: true,
               color: "error",
-              text: "There is an error while user signup",
+              text: "email already in use, try different email",
             });
             this.loader = false;
-            console.log(this.loader, "---------------");
           });
       }
     },

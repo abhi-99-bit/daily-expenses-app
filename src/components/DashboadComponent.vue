@@ -222,7 +222,6 @@ export default {
       vaild: "true",
       search: "",
       dialog: false,
-      // expensesList: [],
       headers: [
         {
           text: "Category",
@@ -288,7 +287,6 @@ export default {
       val || this.close();
     },
   },
-  // Life Cycle_Hook
   mounted() {
     this.userExpensesInitialization();
   },
@@ -296,13 +294,9 @@ export default {
     userExpensesInitialization() {
       this.$store.dispatch("getUserExpenses");
     },
-    clickMe() {
-      console.log("hello");
-    },
+    clickMe() {},
     editItem(item) {
-      // this.editedIndex = this.userExpenses.indexOf(item);
       this.editedIndex = item.post_id;
-      console.log(this.editedIndex, "this is edit id");
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
@@ -311,27 +305,21 @@ export default {
       this.showDialog = true;
       this.deleteIndex = item.post_id;
       this.value = item.category;
-      console.log(this.deleteIndex);
     },
 
     close() {
-      // setTimeout(() => {
-      //   this.editedItem = Object.assign({}, this.defaultItem);
       this.editedIndex = -1;
-      // }, 300);
       this.$refs.dialogForm.resetValidation();
       this.$refs.dialogForm.reset();
       this.dialog = false;
     },
     cancel() {
       this.editedIndex = -1;
-      // this.$refs.dialogForm.resetValidation();
       this.close();
       this.$refs.dialogForm.reset();
       this.showDialog = false;
     },
     confirm() {
-      console.log("confirm");
       this.isConfirm = true;
       let payload = { id: this.deleteIndex };
       let isPromise = new Promise((resolve, reject) => {
@@ -355,21 +343,17 @@ export default {
         });
     },
     save() {
-      console.log("save button call");
       if (this.editedIndex > -1) {
-        console.log("this is edit item", this.editedIndex, this.editedItem);
         let payload = {
           id: this.editedIndex,
           data: this.editedItem,
         };
-        console.log(payload);
         this.progress = true;
         let promise = new Promise((resolve, reject) => {
           this.$store.dispatch("editExpenses", { resolve, reject, payload });
         });
         promise
-          .then((resolve) => {
-            console.log("promise" + " " + resolve);
+          .then(() => {
             this.$refs.dialogForm.reset();
             this.editedIndex = -1;
             this.progress = false;
@@ -388,19 +372,16 @@ export default {
           });
       } else {
         if (this.$refs.dialogForm.validate() == true) {
-          console.log("this is add expensess-------------");
           let payload = {
             data: this.editedItem,
           };
-          // console.log(payload);
           this.progress = true;
           let getPromise = new Promise((resolve, reject) => {
             this.$store.dispatch("addExpenses", { resolve, reject, payload });
           });
           getPromise
-            .then((resolve) => {
+            .then(() => {
               this.progress = false;
-              console.log(resolve);
               this.$refs.dialogForm.resetValidation();
               this.$refs.dialogForm.reset();
               this.$store.dispatch("setSnackbar", {
@@ -417,7 +398,6 @@ export default {
               this.close();
             });
         } else {
-          console.log("there are errors in form");
           this.$store.dispatch("setSnackbar", {
             showing: true,
             color: "red",
@@ -425,8 +405,6 @@ export default {
           });
         }
       }
-
-      // this.close();
     },
   },
 };

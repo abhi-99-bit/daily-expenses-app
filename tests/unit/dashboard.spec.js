@@ -45,12 +45,6 @@ describe("Dashboard Components unit testing", () => {
     mock.onGet("/users/details").reply(200, msg4);
   });
 
-  test("check every is working", () => {
-    document.body.setAttribute("data-app", true);
-    let localVue = new createLocalVue();
-    const wrapper = mount(DashboardComponent, { localVue, store });
-    expect(wrapper.isVueInstance()).toBe(true);
-  });
   test("dialog box is opean on addlist button click", async () => {
     document.body.setAttribute("data-app", true);
     let localVue = new createLocalVue();
@@ -89,9 +83,6 @@ describe("Dashboard Components unit testing", () => {
     expect(wrapper.vm.$data.date).toBe("");
     expect(wrapper.vm.$data.discription).toBe("");
     expect(wrapper.vm.$data.isValid).toBe(false);
-    console.log(wrapper.vm.$data.isValid);
-    // expect(wrapper.text()).toContain("Item is required");
-    // console.log(wrapper.text());
   });
 
   test("testing dialog box with valid fields and make Add expenses request", async () => {
@@ -188,12 +179,8 @@ describe("Dashboard Components unit testing", () => {
     ];
     mock.onGet("/user/expenses-list").reply(200, msg);
     await flushPromises();
-    console.log(wrapper.vm.$data.dialog);
     let editBtn = wrapper.find("#dash-editBtn-239");
-    console.log(editBtn);
     editBtn.trigger("click");
-    console.log(wrapper.vm.$data.dialog);
-    console.log(wrapper.vm.$data.editedItem);
     let saveBtn = wrapper.find("#dash-savebutton");
     saveBtn.trigger("click");
     const msg0 = {
@@ -251,10 +238,7 @@ describe("Dashboard Components unit testing", () => {
     ];
     mock.onGet("/user/expenses-list").reply(200, msg);
     await flushPromises();
-    console.log(wrapper.vm.$data.showDialog);
     let deletbtn = wrapper.find("#dash-deleteBtn-245");
-    console.log(deletbtn);
-    console.log(wrapper.vm.$data.showDialog, "---");
     deletbtn.trigger("click");
     await wrapper.vm.confirm();
     const msg0 = {
@@ -271,12 +255,9 @@ describe("Dashboard Components unit testing", () => {
     await flushPromises();
 
     expect(wrapper.vm.$data.showDialog).toBe(false);
-    console.log(wrapper.vm.$data.showDialog, "---");
 
     expect(wrapper.vm.$data.isConfirm).toBe(false);
-    console.log(wrapper.vm.$data.isConfirm, "---");
 
     expect(wrapper.vm.$data.deleteIndex).toBe(-1);
-    console.log(wrapper.vm.$data.deleteIndex, "---");
   });
 });

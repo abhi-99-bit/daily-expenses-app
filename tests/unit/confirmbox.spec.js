@@ -3,6 +3,7 @@ import ConfirmBox from "@/components/confirmBox.vue";
 
 describe("Confirmbox unit testing", () => {
   test("test discription props in Cofirmbox", () => {
+    document.body.setAttribute("data-app", true);
     const discription = "-----Hello there----";
     let confirm = () => {};
     let cancel = () => {};
@@ -15,10 +16,10 @@ describe("Confirmbox unit testing", () => {
     expect(wrapper.find("#confirmbox-span").text()).toContain(
       "-----Hello there----"
     );
-    // console.log(wrapper.html());
   });
 
   test("test isConfirm props when false in Cofirmbox", () => {
+    document.body.setAttribute("data-app", true);
     let confirm = () => {};
     let cancel = () => {};
     const show = true;
@@ -30,10 +31,10 @@ describe("Confirmbox unit testing", () => {
     });
     // expect(wrapper.find(".v-progress-circular").exists()).toBe(true);
     expect(wrapper.find("#confirm-btn").exists()).toBe(true);
-    console.log(wrapper.html());
   });
 
   test("test isConfirm props when true in Cofirmbox", () => {
+    document.body.setAttribute("data-app", true);
     const show = true;
     let confirm = () => {};
     let cancel = () => {};
@@ -45,7 +46,6 @@ describe("Confirmbox unit testing", () => {
     });
     expect(wrapper.find(".v-progress-circular").exists()).toBe(true);
     // expect(wrapper.find("#confirm-btn").exists()).toBe(true);
-    console.log(wrapper.html());
   });
   test("test confirm and cancel props in confirbox component", async () => {
     document.body.setAttribute("data-app", true);
@@ -58,8 +58,5 @@ describe("Confirmbox unit testing", () => {
       propsData: { show, confirm, cancel },
     });
     wrapper.find("#confirmbox-cancelbtn").trigger("click");
-
-    // console.log(wrapper.vm.$props.show);
-    // console.log(wrapper);
   });
 });

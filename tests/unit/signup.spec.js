@@ -62,13 +62,6 @@ describe("SignUp Component", () => {
     expect(wrapper.find("#signup-button").attributes().disabled).toBe(
       "disabled"
     );
-    console.log(wrapper.find("#signup-button").attributes());
-    console.log(wrapper.vm.firstname, "<-", "firstname");
-    console.log(wrapper.vm.lastname, "<-", "lastname");
-    console.log(wrapper.vm.email, "<-", "email");
-    console.log(wrapper.vm.password, "<-", "password");
-    console.log(wrapper.vm.confirmPassword, "<-", "confirmpassword");
-    console.log(wrapper.vm.checkbox, "<-", "checkbox");
   });
 
   it("Check password and confirm password are same", async () => {
@@ -85,25 +78,20 @@ describe("SignUp Component", () => {
     const confirmPasswordInput = wrapper.find("#signup-confirmpassword");
     await confirmPasswordInput.setValue(confirmPassword);
 
-    // wrapper.find("#signup-button").trigger("click");
-
     await wrapper.vm.$nextTick();
 
     expect(wrapper.vm.password).toContain(password);
     expect(wrapper.vm.confirmPassword).toContain(confirmPassword);
-    console.log(wrapper.text());
     expect(wrapper.text()).toContain(
       "The password confirmation does not match"
     );
-    console.log(wrapper.vm.$data, "------data-----");
   });
 
   it("dispacthes setSnackbar user when form is not vaild ", async () => {
     const wrapper = mount(Signup, { store, localVue, router });
-    // wrapper.vm.signupFormIsValid = true;
+
     await wrapper.find("#signup-button").trigger("click");
     expect(wrapper.vm.signupFormIsValid).toBeFalsy();
-    // expect(actions.setSnackbar).toHaveBeenCalled();
   });
 
   it("dispacthes signup user when form is  vaild ", async () => {
@@ -133,8 +121,6 @@ describe("SignUp Component", () => {
     const checkboxInput = wrapper.find("#sigup-checkbox");
     checkboxInput.setChecked(checkbox);
     wrapper.find("#signup-button").trigger("click");
-    // expect(actions.signupUser).toHaveBeenCalled();
-
     const msg = {
       status: "success",
       messeage: "insert user value",
@@ -144,9 +130,7 @@ describe("SignUp Component", () => {
 
     expect(respones).toBeDefined();
     expect(wrapper.vm.$data.loader).toBe(false);
-    console.log(wrapper.vm.$data.loader);
     expect(wrapper.vm.$route.path).toBe("/login");
-    console.log(wrapper.vm.$route.path);
   });
 
   it("email already in use", async () => {
@@ -190,6 +174,5 @@ describe("SignUp Component", () => {
     const respones = mock.onPost("/users").reply(200, msg);
     await flushPromises();
     expect(respones).toBeDefined();
-    console.log(respones);
   });
 });

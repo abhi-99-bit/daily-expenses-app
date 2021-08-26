@@ -51,22 +51,15 @@ export default new Vuex.Store({
     },
     TODAY_EXPENSES(state, payload) {
       state.dailyCount = payload;
-      // console.log(payload.total)
-      console.log(this.dailyCount);
     },
     WEEKLY_EXPENSES(state, payload) {
       state.weeklyCount = payload;
-      // console.log(payload.total)
-      console.log(this.dailyCount);
     },
     MONTHLY_EXPENSES(state, payload) {
       (state.loading = false), (state.monthlyCount = payload);
-      // console.log(payload.total)
-      console.log(this.dailyCount);
     },
     SET_USER_DETAILS(state, payload) {
       state.user = payload[0];
-      console.log(this.state.user);
       if (localStorage.token) {
         this.state.showNavbar = true;
       }
@@ -86,7 +79,6 @@ export default new Vuex.Store({
   },
   actions: {
     async getUserExpenses({ commit }) {
-      console.log("this get expenses");
       await apiCall
         .getExpenses()
         .then((response) => {
@@ -98,13 +90,11 @@ export default new Vuex.Store({
           return response.data;
         })
         .catch((error) => {
-          console.log(error);
           return error;
         });
     },
     async editExpenses({ commit }, { resolve, reject, payload }) {
       const data = await apiCall.editExpenses(payload.id, payload.data);
-      console.log(data, "this is data");
       if (data.status === 200) {
         commit("EDIT_EXPENSES", payload);
         this.dispatch("getTodayExpenses");
@@ -130,9 +120,7 @@ export default new Vuex.Store({
       }
     },
     async addExpenses({ commit }, { resolve, reject, payload }) {
-      console.log("addExpenses api called");
       let data = await apiCall.addExpenses(payload.data);
-      console.log(data);
       if (data.status === 200) {
         commit("ADD_EXPENSES", payload.data);
         this.dispatch("getTodayExpenses");
@@ -145,23 +133,18 @@ export default new Vuex.Store({
       }
     },
     getTodayExpenses({ commit }) {
-      console.log("this is Today expenses");
       apiCall
         .getTodayExpenses()
         .then((response) => {
-          console.log(response);
           commit("TODAY_EXPENSES", response.data.data[0].total);
-          // console.log(response.data.data[0].total);
         })
-        .catch((error) => console.error(error));
+        .catch(() => console.error());
     },
     getWeeklyExpenses({ commit }) {
       apiCall
         .getWeeklyExpenses()
         .then((response) => {
-          console.log(response);
           commit("WEEKLY_EXPENSES", response.data.data[0].weekly_total);
-          // console.log(response.data.data[0].weekly_total);
         })
         .catch(() => console.error());
     },
@@ -169,14 +152,11 @@ export default new Vuex.Store({
       apiCall
         .getMonthlyExpense()
         .then((response) => {
-          console.log(response);
           commit("MONTHLY_EXPENSES", response.data.data[0].monthly_total);
-          // console.log(response.data.data[0].monthly_total);
         })
         .catch(() => console.error());
     },
     setSnackbar({ commit }, snackbar) {
-      console.log("dispatch called");
       commit("SET_SNACKBAR", snackbar);
     },
     getUser({ commit }) {
@@ -190,13 +170,9 @@ export default new Vuex.Store({
         .catch((error) => console.error(error));
     },
     async loginUser({ commit }, { resolve, reject, payload }) {
-      console.log("this is login action");
-      console.log(payload.data);
       let userData = await apiCall.userLogin(payload.data);
-      console.log(userData);
       if (userData.data.code === 200 && userData.data.auth === true) {
         commit("LOGIN_USER");
-        console.log("Login sucess");
         localStorage.setItem("token", userData.data.token);
         localStorage.setItem("fName", userData.data.results[0].first_name);
         localStorage.setItem("lName", userData.data.results[0].last_name);
@@ -208,14 +184,10 @@ export default new Vuex.Store({
       }
     },
     async signupUser({ commit }, { resolve, reject, payload }) {
-      console.log("hello");
       let data = await apiCall.userSignup(payload.data);
-      console.log(data.status);
-      console.log(data.data);
       if (data.data.errors) {
         commit("USER_SIGNUP");
         reject && reject();
-        console.log("error here");
       } else {
         resolve && resolve();
       }
